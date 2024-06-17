@@ -15,7 +15,7 @@ export class LandingComponent implements OnDestroy {
 
     constructor(public router: Router, private layoutService: LayoutService) {
         this.subscription = this.layoutService.configUpdate$.subscribe(config => {
-            this.darkMode = config.colorScheme === 'dark'  ? true : false;
+            this.darkMode = config.colorScheme === 'dark' ? true : false;
         });
     }
 
@@ -27,5 +27,9 @@ export class LandingComponent implements OnDestroy {
 
     ngOnDestroy() {
         this.subscription.unsubscribe();
+    }
+
+    navigateToHome() {
+        this.router.navigate(["/uikit/overlay"]);
     }
 }
