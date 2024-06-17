@@ -23,8 +23,20 @@ export class CrudComponent implements OnInit {
               private messageService: MessageService,
               private confirmationService: ConfirmationService) {}
 
-  ngOnInit() {
-    this.commandeService.getCommandes().then(data => this.commandes = data);
+              ngOnInit(): void {
+                this.commandeService.getCommandes()
+                    .subscribe(
+                        (data) => {
+                            this.commandes = data;
+                            console.log('Commandes récupérées :', this.commandes);
+                        },
+                        (error) => {
+                            console.error('Erreur lors de la récupération des commandes :', error);
+                        }
+                    );
+            
+
+
 
     this.cols = [
       { field: 'numCommande', header: 'Num Commande' },
