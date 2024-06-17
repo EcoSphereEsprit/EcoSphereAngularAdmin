@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
 import { UserServiceService } from 'src/app/demo/service/user.service.service';
-
+import { NgForm } from '@angular/forms';
 @Component({
   templateUrl: './register.component.html'
 })
@@ -13,6 +13,7 @@ export class RegisterComponent {
   password!: string;
   phoneNumber!: string;
   image!: File;
+  registerForm!: NgForm;
 
   constructor(public layoutService: LayoutService, private userService: UserServiceService) {}
 
