@@ -1,3 +1,5 @@
+// crud.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { Commande } from 'src/app/demo/api/commande';
@@ -8,35 +10,31 @@ import { CommandeService } from 'src/app/demo/service/commande.service';
   providers: [MessageService, ConfirmationService]
 })
 export class CrudComponent implements OnInit {
+dt: any;
+onGlobalFilter(arg0: any,$event: Event) {
+throw new Error('Method not implemented.');
+}
 
   commandes: Commande[] = [];
-  selectedCommandes: Commande[] = [];
-  commandeDialog: boolean = false;
-  deleteCommandeDialog: boolean = false;
-  deleteCommandesDialog: boolean = false;
-  commande: Commande = {};
-  submitted: boolean = false;
-
+  selectedCommande: Commande | null = null;
+  displayDetailsDialog: boolean = false;
   cols?: any[];
 
   constructor(private commandeService: CommandeService,
               private messageService: MessageService,
               private confirmationService: ConfirmationService) {}
 
-              ngOnInit(): void {
-                this.commandeService.getCommandes()
-                    .subscribe(
-                        (data) => {
-                            this.commandes = data;
-                            console.log('Commandes récupérées :', this.commandes);
-                        },
-                        (error) => {
-                            console.error('Erreur lors de la récupération des commandes :', error);
-                        }
-                    );
-            
-
-
+  ngOnInit(): void {
+    this.commandeService.getCommandes()
+      .subscribe(
+        (data) => {
+          this.commandes = data;
+          console.log('Commandes récupérées :', this.commandes);
+        },
+        (error) => {
+          console.error('Erreur lors de la récupération des commandes :', error);
+        }
+      );
 
     this.cols = [
       { field: 'numCommande', header: 'Num Commande' },
@@ -47,53 +45,71 @@ export class CrudComponent implements OnInit {
     ];
   }
 
+  showDetailsDialog(commande: Commande) {
+    this.selectedCommande = { ...commande };
+    this.displayDetailsDialog = true;
+  }
+
+  closeDetailsDialog() {
+    this.displayDetailsDialog = false;
+    this.selectedCommande = null;
+  }
+
   openNew() {
-    this.commande = {};
-    this.submitted = false;
-    this.commandeDialog = true;
+    this.selectedCommande = {} as Commande;
+    this.displayDetailsDialog = true;
   }
 
   editCommande(commande: Commande) {
-    this.commande = { ...commande };
-    this.commandeDialog = true;
+    this.selectedCommande = { ...commande };
+    this.displayDetailsDialog = true;
   }
 
   hideDialog() {
-    this.commandeDialog = false;
-    this.submitted = false;
+    this.displayDetailsDialog = false;
+    this.selectedCommande = null;
   }
 
   sauvegarderCommande() {
-    if (this.commande._id) {
-      this.commandeService.updateCommande(this.commande).then(() => {
-        this.messageService.add({severity:'success', summary: 'Success', detail: 'Commande updated', life: 3000});
-        this.hideDialog();
-        this.commandes = [...this.commandes];
-      }).catch(error => {
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error updating commande', life: 3000});
-        console.error('Error updating commande', error);
-      });
+    if (this.selectedCommande) { // Check if selectedCommande is not null or undefined
+      if (this.selectedCommande._id) {
+        this.commandeService.updateCommande(this.selectedCommande).then(() => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande updated', life: 3000 });
+          this.hideDialog();
+        }).catch(error => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error updating commande', life: 3000 });
+          console.error('Error updating commande', error);
+        });
+      } else {
+        this.commandeService.addCommande(this.selectedCommande).then((addedCommande) => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande added', life: 3000 });
+          this.hideDialog();
+          this.commandes = [...this.commandes, addedCommande];
+        }).catch(error => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error adding commande', life: 3000 });
+          console.error('Error adding commande', error);
+        });
+      }
     } else {
-      this.commandeService.addCommande(this.commande).then((addedCommande) => {
-        this.messageService.add({severity:'success', summary: 'Success', detail: 'Commande added', life: 3000});
-        this.hideDialog();
-        this.commandes = [...this.commandes, addedCommande];
-      }).catch(error => {
-        this.messageService.add({severity:'error', summary: 'Error', detail: 'Error adding commande', life: 3000});
-        console.error('Error adding commande', error);
-      });
+      // Handle the case where selectedCommande is null
+      console.error('selectedCommande is null or undefined');
     }
   }
+  
+  
 
- 
-
- 
-
-
-
-
-
-  onGlobalFilter(dt: any, event: any) {
-    dt.filterGlobal(event.target.value, 'contains');
+  deleteCommande(id: string) {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this commande?',
+      accept: () => {
+        this.commandeService.deleteCommande(id).then(() => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande deleted', life: 3000 });
+          this.commandes = this.commandes.filter(c => c._id !== id);
+        }).catch(error => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error deleting commande', life: 3000 });
+          console.error('Error deleting commande', error);
+        });
+      }
+    });
   }
 }

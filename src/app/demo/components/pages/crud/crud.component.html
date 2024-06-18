@@ -1,126 +1,141 @@
-<!-- crud-gestion-commande.component.html -->
-
 <div class="grid">
     <div class="col-12">
-        <div class="card px-6 py-6">
-            <p-toast></p-toast>
-            <p-toolbar styleClass="mb-4">
-                <ng-template pTemplate="left">
-                    <div class="my-2">
-                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
-                    </div>
-                </ng-template>
-
-                <ng-template pTemplate="right">
-                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
-                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
-                </ng-template>
-            </p-toolbar>
-
-            <p-table #dt [value]="commandes" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['numCommande','userId','statut','prixTotal','modePaiement']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedCommandes" selectionMode="multiple" [rowHover]="true" dataKey="_id">
-                <ng-template pTemplate="caption">
-                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                        <h5 class="m-0">Manage Orders</h5>
-                        <span class="block mt-2 md:mt-0 p-input-icon-left">
-                            <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."  class="w-full sm:w-auto"/>
-                        </span>
-                    </div>
-                </ng-template>
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th style="width: 3rem">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
-                        <th pSortableColumn="numCommande">Num Commande <p-sortIcon field="numCommande"></p-sortIcon></th>
-                        <th pSortableColumn="userId">User ID <p-sortIcon field="userId"></p-sortIcon></th>
-                        <th pSortableColumn="statut">Status <p-sortIcon field="statut"></p-sortIcon></th>
-                        <th pSortableColumn="prixTotal">Total Price <p-sortIcon field="prixTotal"></p-sortIcon></th>
-                        <th pSortableColumn="modePaiement">Payment Mode <p-sortIcon field="modePaiement"></p-sortIcon></th>
-                        <th></th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-commande>
-                    <tr>
-                        <td>
-                            <p-tableCheckbox [value]="commande"></p-tableCheckbox>
-                        </td>
-                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Num Commande</span>
-                            {{commande.numCommande}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">User ID</span>
-                            {{commande.userId}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Status</span>
-                            {{commande.statut}}
-                        </td>
-                        <td style="width:14%; min-width:8rem;">
-                            <span class="p-column-title">Total Price</span>
-                            {{commande.prixTotal | currency:'USD'}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">Payment Mode</span>
-                            {{commande.modePaiement}}
-                        </td>
-                        <td>
-                            <div class="flex">
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-
-        <p-dialog [(visible)]="commandeDialog" [style]="{width: '450px'}" header="Commande Details" [modal]="true" class="p-fluid">
-            <ng-template pTemplate="content">
-                <div class="field">
-                    <label for="numCommande">Num Commande</label>
-                    <input type="text" pInputText id="numCommande" [(ngModel)]="commande.numCommande" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !commande.numCommande}"/>
-                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !commande.numCommande">Num Commande is required.</small>
-                </div>
-                <div class="field">
-                    <label for="userId">User ID</label>
-                    <input type="text" pInputText id="userId" [(ngModel)]="commande.userId" required/>
-                </div>
-                <div class="field">
-                    <label for="statut">Status</label>
-                    <input type="text" pInputText id="statut" [(ngModel)]="commande.statut" required/>
-                </div>
-                <div class="field">
-                    <label for="prixTotal">Total Price</label>
-                    <p-inputNumber id="prixTotal" [(ngModel)]="commande.prixTotal" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
-                </div>
-                <div class="field">
-                    <label for="modePaiement">Payment Mode</label>
-                    <input type="text" pInputText id="modePaiement" [(ngModel)]="commande.modePaiement" required/>
-                </div>
-            </ng-template>
-
-            <ng-template pTemplate="footer">
-                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="sauvegarderCommande()"></button>
-            </ng-template>
-        </p-dialog>
-
-        <p-dialog [(visible)]="deleteCommandeDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
-            <div class="flex align-items-center justify-content-center">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                <span *ngIf="commande">Are you sure you want to delete <b>{{commande.numCommande}}</b>?</span>
+      <div class="card px-6 py-6">
+        <!-- Table des commandes -->
+        <p-table [value]="commandes" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                 [globalFilterFields]="['numCommande','userId','statut','prixTotal','modePaiement']"
+                 [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                 currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} commandes"
+                 [(selection)]="selectedCommande" selectionMode="single" [rowHover]="true" dataKey="_id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Gérer les commandes</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Rechercher..." class="w-full sm:w-auto"/>
+              </span>
             </div>
-            <ng-template pTemplate="footer">
-                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteCommandeDialog = false"></button>
-            </ng-template>
-        </p-dialog>
-
-        <p-dialog [(visible)]="deleteCommandesDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
-            <div class="flex align-items-center justify-content-center">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                <span>Are you sure you want to delete selected commandes?</span>
-            </div>
-            <ng-template pTemplate="footer">
-                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteCommandesDialog = false"></button>
-            </ng-template>
-        </p-dialog>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="numCommande">Numéro de Commande <p-sortIcon field="numCommande"></p-sortIcon></th>
+              <th pSortableColumn="userId">ID Utilisateur <p-sortIcon field="userId"></p-sortIcon></th>
+              <th pSortableColumn="statut">Statut <p-sortIcon field="statut"></p-sortIcon></th>
+              <th pSortableColumn="prixTotal">Prix Total <p-sortIcon field="prixTotal"></p-sortIcon></th>
+              <th pSortableColumn="modePaiement">Mode de Paiement <p-sortIcon field="modePaiement"></p-sortIcon></th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-commande>
+            <tr>
+              <td>
+                <p-tableCheckbox [value]="commande"></p-tableCheckbox>
+              </td>
+              <td style="min-width: 10rem;">
+                <span class="p-column-title">Numéro de Commande</span>
+                {{commande.numCommande}}
+              </td>
+              <td style="min-width: 10rem;">
+                <span class="p-column-title">ID Utilisateur</span>
+                {{commande.userId}}
+              </td>
+              <td style="min-width: 10rem;">
+                <span class="p-column-title">Statut</span>
+                {{commande.statut}}
+              </td>
+              <td style="min-width: 8rem;">
+                <span class="p-column-title">Prix Total</span>
+                {{commande.prixTotal | currency:'USD'}}
+              </td>
+              <td style="min-width: 10rem;">
+                <span class="p-column-title">Mode de Paiement</span>
+                {{commande.modePaiement}}
+              </td>
+              <td>
+                <div class="flex">
+                  <button pButton type="button" label="Détails" icon="pi pi-info-circle"
+                          (click)="showDetailsDialog(commande)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
-</div>
+  
+    <!-- Dialog pour les détails de commande -->
+    <p-dialog [(visible)]="displayDetailsDialog" [style]="{ width: '800px' }" header="Détails de la Commande" [modal]="true">
+      <ng-template pTemplate="content">
+        <div class="p-grid">
+          <div class="p-col-12">
+            <!-- Détails de la commande -->
+            <div class="field">
+              <label for="numCommande">Numéro de Commande</label>
+              <input type="text" pInputText id="numCommande" [value]="selectedCommande?.numCommande" disabled>
+            </div>
+            <div class="field">
+              <label for="statut">Statut</label>
+              <input type="text" pInputText id="statut" [value]="selectedCommande?.statut" disabled>
+            </div>
+            <div class="field">
+              <label for="prixTotal">Prix Total</label>
+              <input type="text" pInputText id="prixTotal" [value]="selectedCommande?.prixTotal | currency:'USD'" disabled>
+            </div>
+            <div class="field">
+              <label for="modePaiement">Mode de Paiement</label>
+              <input type="text" pInputText id="modePaiement" [value]="selectedCommande?.modePaiement" disabled>
+            </div>
+  
+            <!-- Informations de livraison -->
+            <div>
+              <h5>Informations de Livraison</h5>
+              <p>
+                Nom: {{ selectedCommande?.infosLivraison?.nom }}<br>
+                Prénom: {{ selectedCommande?.infosLivraison?.prenom }}<br>
+                Adresse: {{ selectedCommande?.infosLivraison?.adresse }}<br>
+                Ville: {{ selectedCommande?.infosLivraison?.ville }}<br>
+                Code Postal: {{ selectedCommande?.infosLivraison?.codePostal }}<br>
+                Pays: {{ selectedCommande?.infosLivraison?.pays }}<br>
+                Téléphone: {{ selectedCommande?.infosLivraison?.telephone }}
+              </p>
+            </div>
+  
+            <!-- Informations sur les produits -->
+            <div>
+              <h5>Informations sur les Produits</h5>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Nom du Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix Unitaire</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="selectedCommande?.produits && selectedCommande?.produits?.length; else noProducts">
+                    <tr *ngFor="let produit of selectedCommande?.produits">
+                      <td>{{ produit?.idProduit?.name }}</td>
+                      <td>{{ produit?.quantite }}</td>
+                      <td>{{ produit?.prixUnitaire | currency:'USD' }}</td>
+                    </tr>
+                  </ng-container>
+                  <ng-template #noProducts>
+                    <tr>
+                      <td colspan="3">Aucun produit trouvé</td>
+                    </tr>
+                  </ng-template>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <button pButton type="button" label="Fermer" icon="pi pi-times" class="p-button-text" (click)="closeDetailsDialog()"></button>
+      </ng-template>
+    </p-dialog>
+  </div>
+  

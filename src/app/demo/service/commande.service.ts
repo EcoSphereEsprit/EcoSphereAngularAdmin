@@ -1,8 +1,9 @@
+// commande.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Commande } from '../api/commande';
 import { Observable } from 'rxjs';
-import { ReturnStatement } from '@angular/compiler';
+import { Commande } from '../api/commande';
 
 @Injectable({
   providedIn: 'root'
@@ -13,29 +14,35 @@ export class CommandeService {
 
   constructor(private http: HttpClient) {}
 
-  getCommandes(): Observable<any> {
+  getCommandes(): Observable<Commande[]> {
     const token = localStorage.getItem('token');
-
     if (!token) {
-        // Gérer le cas où le token n'est pas présent
-        console.error('Token is missing');
-        ReturnStatement;
+      console.error('Token is missing');
     }
-
     const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+      'Authorization': `Bearer ${token}`
     });
+    return this.http.get<Commande[]>(this.apiUrl, { headers });
+  }
 
-    return this.http.get(this.apiUrl, { headers });
-}
+  getCommandeDetails(id: string): Observable<Commande> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token is missing');
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    return this.http.get<Commande>(`${this.apiUrl}/${id}`, { headers });
+  }
 
   addCommande(commande: Commande): Promise<Commande> {
     return this.http.post<Commande>(this.apiUrl, commande)
       .toPromise()
-      .then(createdCommande => createdCommande || {}) // handle potential null or undefined
+      .then(createdCommande => createdCommande || {})
       .catch(error => {
         console.error('Error adding commande:', error);
-        throw error; // or handle error as per your application's logic
+        throw error;
       });
   }
 
@@ -43,15 +50,19 @@ export class CommandeService {
     const url = `${this.apiUrl}/${commande._id}`;
     return this.http.put<Commande>(url, commande)
       .toPromise()
-      .then(updatedCommande => updatedCommande || {}) // handle potential null or undefined
+      .then(updatedCommande => updatedCommande || {})
       .catch(error => {
         console.error('Error updating commande:', error);
-        throw error; // or handle error as per your application's logic
+        throw error;
       });
   }
 
   deleteCommande(id: string): Promise<void> {
     const url = `${this.apiUrl}/${id}`;
     return this.http.delete<void>(url).toPromise()
+      .catch(error => {
+        console.error('Error deleting commande:', error);
+        throw error;
+      });
   }
 }
