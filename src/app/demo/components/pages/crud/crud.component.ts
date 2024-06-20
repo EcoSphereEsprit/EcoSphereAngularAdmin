@@ -19,6 +19,7 @@ throw new Error('Method not implemented.');
   selectedCommande: Commande | null = null;
   displayDetailsDialog: boolean = false;
   cols?: any[];
+  statutFilter: string = ''; // Variable pour le statut de filtrage
 
   constructor(private commandeService: CommandeService,
               private messageService: MessageService,
@@ -112,4 +113,25 @@ throw new Error('Method not implemented.');
       }
     });
   }
+
+cancelCommande(id: string) {
+  console.log(`Attempting to cancel order with id ${id}`);
+  
+  this.commandeService.cancelOrder(id).subscribe(
+    (response) => {
+      console.log(`Successfully cancelled order with id ${id}`, response);
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande cancelled', life: 3000 });
+      this.commandes = this.commandes.map(c => c._id === id ? { ...c, statut: 'annulée' } : c);
+    },
+    (error) => {
+      console.error(`Error cancelling order with id ${id}`, error);
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error cancelling commande', life: 3000 });
+    }
+  );
+}
+
+  
+ 
+
+  
 }

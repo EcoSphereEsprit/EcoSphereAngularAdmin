@@ -1,7 +1,7 @@
 // commande.service.ts
 
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Commande } from '../api/commande';
 
@@ -64,5 +64,33 @@ export class CommandeService {
         console.error('Error deleting commande:', error);
         throw error;
       });
+  }
+  
+
+  cancelOrder(id: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token is missing');
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    console.log(`Sending request to cancel order with id ${id}`);  // Log
+    return this.http.put(`http://localhost:9090/commandes/${id}/annuler`, {}, { headers });
+  }
+  
+  
+  
+   // Nouvelle méthode pour récupérer les commandes filtrées par statut
+   getCommandesByStatut(statut: string): Observable<Commande[]> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token is missing');
+    }
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+    const params = new HttpParams().set('statut', statut); // Paramètre de requête pour filtrer par statut
+    return this.http.get<Commande[]>(`${this.apiUrl}/filtre`, { headers, params });
   }
 }
