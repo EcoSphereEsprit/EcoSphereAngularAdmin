@@ -13,7 +13,10 @@ export class LandingComponent implements OnDestroy {
 
     darkMode: boolean = false;
 
-    constructor(public router: Router, private layoutService: LayoutService) {
+    constructor(
+        public router: Router,
+        private layoutService: LayoutService
+    ) {
         this.subscription = this.layoutService.configUpdate$.subscribe(config => {
             this.darkMode = config.colorScheme === 'dark' ? true : false;
         });
