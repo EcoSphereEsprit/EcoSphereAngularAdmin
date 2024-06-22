@@ -67,8 +67,7 @@
       
         <!-- Navigation Buttons -->
         <div class="flex justify-end mt-6">
-          <button type="button" class="p-button-secondary" (click)="router.navigateByUrl('/ecommerce/shopping-cart')">Return to Cart</button>
-          <button type="submit" class="p-button-primary" [disabled]="!checkoutForm.valid">Confirm Order</button>
+          <button type="submit">Confirm Order</button>
         </div>
       
         <!-- Total Amount -->
@@ -77,5 +76,4 @@
           <span class="text-2xl font-bold">{{ total.toFixed(2) }} CAD</span>
         </div>
       </form>
-      
       

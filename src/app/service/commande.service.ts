@@ -50,6 +50,27 @@ export class CommandeService {
       });
   }
 
+
+  ajouterCommande(commandeData: any): Observable<any> {
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDk1MTQxLCJleHAiOjE3MTkwOTg3NDF9.xp4eRqkP_QdEJCiA-AfTksY3d0Fziagx7nN72Yy96tw');
+    console.log('Données envoyées depuis le frontend vers le backend pour ajouter une commande :', commandeData);
+    const commandeAEnvoyer = { ...commandeData };
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.error('Token is missing');
+      // Handle error or return an observable with an error
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post<any>(`http://localhost:9090/commandes/ajouter`, commandeAEnvoyer, { headers });
+  }
+
+  
+
   updateCommande(commande: Commande): Promise<Commande> {
     const url = `${this.apiUrl}/${commande._id}`;
     return this.http.put<Commande>(url, commande)

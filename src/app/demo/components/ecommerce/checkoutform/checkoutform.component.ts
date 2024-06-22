@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommandeService } from '../../../../service/commande.service';
+import { Commande } from '../../../../api/commande'; // Adjust path as per your application structure
 
 @Component({
   selector: 'app-checkout',
@@ -7,50 +9,37 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class CheckoutComponent implements OnInit {
 
-  email: string = '';
-  phoneNumber: string = '';
-  newsletter: boolean = false;
-  saveInfo: boolean = false;
-  shippingInfo: any = {
-    name: '',
-    lastName: '',
-    address: '',
-    address2: '',
-    postalCode: '',
-    city: ''
-  };
+  checkoutForm!: FormGroup;
   cartItems: any[] = [];
-  paymentMethod: string = '';
-  paymentOptions: string[] = ['card', 'cash'];
   total: number = 0;
+  paymentMethod: string = 'card'; // Default payment method
+  paymentOptions: string[] = ['card', 'cash']; // Payment options
+    userId: any;
 
-  checkoutForm: FormGroup = new FormGroup({});
-router: any;
-
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private commandeService: CommandeService
+  ) {}
 
   ngOnInit(): void {
-    this.loadCartItems();
-    this.loadPaymentMethod();
     this.initializeForm();
+    this.loadCartItems();
     this.calculateTotal();
-
-    console.log('Cart Items in CheckoutComponent:', this.cartItems);
   }
 
   initializeForm(): void {
     this.checkoutForm = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required, Validators.pattern('^\\+(?:[0-9]●?●?){6,14}[0-9]$')]], // Validation for international phone number
-      newsletter: [this.newsletter],
-      saveInfo: [this.saveInfo],
+      phoneNumber: ['', [Validators.required]],
+      newsletter: [false],
+      saveInfo: [false],
       name: ['', Validators.required],
       lastName: ['', Validators.required],
       address: ['', Validators.required],
       address2: [''],
       postalCode: ['', Validators.required],
       city: ['', Validators.required],
-      paymentMethod: ['', Validators.required]
+      paymentMethod: [this.paymentMethod, Validators.required]
     });
   }
 
@@ -63,16 +52,6 @@ router: any;
     }
   }
 
-  loadPaymentMethod(): void {
-    const storedPaymentMethod = localStorage.getItem('paymentMethod');
-    if (storedPaymentMethod && this.paymentOptions.includes(storedPaymentMethod)) {
-      this.paymentMethod = storedPaymentMethod;
-      this.checkoutForm.patchValue({ paymentMethod: this.paymentMethod });
-    } else {
-      this.paymentMethod = ''; // Set default if none stored
-    }
-  }
-
   calculateTotal(): void {
     let subtotal = this.cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     this.total = subtotal + this.getShippingCost();
@@ -82,14 +61,64 @@ router: any;
     return this.paymentMethod === 'cash' ? 7 : 0;
   }
 
+  updatePaymentMethod(method: string): void {
+    this.paymentMethod = method;
+    this.calculateTotal();
+  }
+
   processCheckout(): void {
     if (this.checkoutForm.valid) {
-      console.log('Checkout process initiated...');
-      // Implement checkout logic here
+      // Form is valid, proceed with checkout
+      const formData = this.checkoutForm.value;
+      const commandeData = {
+        numCommande: `CMD${Math.floor(Math.random() * 10000)}`,
+        produits: this.cartItems.map(item => ({
+          idProduit: '665a3242c0e86fbef95cda57',
+          quantite: item.quantity,
+          prixUnitaire: item.price
+        })),
+        infosLivraison: {
+          nom: formData.name,
+          prenom: formData.lastName,
+          adresse: formData.address,
+          ville: formData.city,
+          codePostal: formData.postalCode,
+          pays: 'Tunis',
+          telephone: formData.phoneNumber
+        },
+        prixTotal: this.total,
+        modePaiement: formData.paymentMethod,
+        coupon: null,
+        pourcentageRéduction: 0,
+
+      };
+  
+      // Call commandeService to add order
+      this.commandeService.ajouterCommande(commandeData).subscribe(
+        (response: Commande) => {
+          console.log('Commande ajoutée avec succès:', response);
+          // Display order details or redirect as needed
+        },
+        error => {
+          console.error('Erreur lors de l\'ajout de la commande:', error);
+          // Handle error
+        }
+      );
     } else {
+      // Form is invalid, log validation errors
       console.error('Form validation error. Please check your input.');
+      // Optional: Provide user feedback on invalid fields
+      Object.keys(this.checkoutForm.controls).forEach(key => {
+        const controlErrors = this.checkoutForm.get(key)?.errors;
+        if (controlErrors != null) {
+          Object.keys(controlErrors).forEach(keyError => {
+            console.error(`Validation error for ${key}: ${keyError}`);
+          });
+        }
+      });
     }
   }
+  
 
   updateQuantity(event: number, item: any): void {
     const index = this.cartItems.findIndex(cartItem => cartItem.id === item.id);
@@ -104,11 +133,5 @@ router: any;
     this.cartItems.splice(index, 1);
     localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
     this.calculateTotal();
-  }
-
-  updatePaymentMethod(method: string) {
-    this.paymentMethod = method;
-    this.calculateTotal(); // Recalculate total with updated payment method
-    localStorage.setItem('paymentMethod', this.paymentMethod);
   }
 }
