@@ -15,6 +15,8 @@ export class CommandeService {
   constructor(private http: HttpClient) {}
 
   getCommandes(): Observable<Commande[]> {
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing');
@@ -26,6 +28,8 @@ export class CommandeService {
   }
 
   getCommandeDetails(id: string): Observable<Commande> {
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing');
@@ -68,6 +72,8 @@ export class CommandeService {
   
 
   cancelOrder(id: string): Observable<any> {
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing');
@@ -83,6 +89,8 @@ export class CommandeService {
   
    // Nouvelle méthode pour récupérer les commandes filtrées par statut
    getCommandesByStatut(statut: string): Observable<Commande[]> {
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('Token is missing');

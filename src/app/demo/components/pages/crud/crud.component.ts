@@ -1,137 +1,141 @@
-// crud.component.ts
-
 import { Component, OnInit } from '@angular/core';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { Commande } from 'src/app/demo/api/commande';
-import { CommandeService } from 'src/app/demo/service/commande.service';
+import { Product } from '../../../api/product';
+import { ProductService } from '../../../service/product.service';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { Table } from 'primeng/table';
 
 @Component({
-  templateUrl: './crud.component.html',
-  providers: [MessageService, ConfirmationService]
+    templateUrl: './crud.component.html',
+    providers: [MessageService, ConfirmationService]
 })
 export class CrudComponent implements OnInit {
-dt: any;
-onGlobalFilter(arg0: any,$event: Event) {
-throw new Error('Method not implemented.');
-}
 
-  commandes: Commande[] = [];
-  selectedCommande: Commande | null = null;
-  displayDetailsDialog: boolean = false;
-  cols?: any[];
-  statutFilter: string = ''; // Variable pour le statut de filtrage
+    productDialog: boolean = false;
 
-  constructor(private commandeService: CommandeService,
-              private messageService: MessageService,
-              private confirmationService: ConfirmationService) {}
+    deleteProductDialog: boolean = false;
 
-  ngOnInit(): void {
-    this.commandeService.getCommandes()
-      .subscribe(
-        (data) => {
-          this.commandes = data;
-          console.log('Commandes récupérées :', this.commandes);
-        },
-        (error) => {
-          console.error('Erreur lors de la récupération des commandes :', error);
+    deleteProductsDialog: boolean = false;
+
+    products: Product[] = [];
+
+    product: Product = {};
+
+    selectedProducts: Product[] = [];
+
+    submitted: boolean = false;
+
+    cols: any[] = [];
+
+    statuses: any[] = [];
+
+    rowsPerPageOptions = [5, 10, 20];
+
+    constructor(private productService: ProductService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
+
+    ngOnInit() {
+        this.productService.getProducts().then(data => this.products = data);
+
+        this.cols = [
+            { field: 'product', header: 'Product' },
+            { field: 'price', header: 'Price' },
+            { field: 'category', header: 'Category' },
+            { field: 'rating', header: 'Reviews' },
+            { field: 'inventoryStatus', header: 'Status' }
+        ];
+
+        this.statuses = [
+            { label: 'INSTOCK', value: 'instock' },
+            { label: 'LOWSTOCK', value: 'lowstock' },
+            { label: 'OUTOFSTOCK', value: 'outofstock' }
+        ];
+    }
+
+    openNew() {
+        this.product = {};
+        this.submitted = false;
+        this.productDialog = true;
+    }
+
+    deleteSelectedProducts() {
+        this.deleteProductsDialog = true;
+    }
+
+    editProduct(product: Product) {
+        this.product = { ...product };
+        this.productDialog = true;
+    }
+
+    deleteProduct(product: Product) {
+        this.deleteProductDialog = true;
+        this.product = { ...product };
+    }
+
+    confirmDeleteSelected() {
+        this.deleteProductsDialog = false;
+        this.products = this.products.filter(val => !this.selectedProducts.includes(val));
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+        this.selectedProducts = [];
+    }
+
+    confirmDelete() {
+        this.deleteProductDialog = false;
+        this.products = this.products.filter(val => val.id !== this.product.id);
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
+        this.product = {};
+    }
+
+    hideDialog() {
+        this.productDialog = false;
+        this.submitted = false;
+    }
+
+    saveProduct() {
+        this.submitted = true;
+
+        if (this.product.name?.trim()) {
+            if (this.product.id) {
+                // @ts-ignore
+                this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
+                this.products[this.findIndexById(this.product.id)] = this.product;
+                this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
+            } else {
+                this.product.id = this.createId();
+                this.product.code = this.createId();
+                this.product.image = 'product-placeholder.svg';
+                // @ts-ignore
+                this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
+                this.products.push(this.product);
+                this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
+            }
+
+            this.products = [...this.products];
+            this.productDialog = false;
+            this.product = {};
         }
-      );
-
-    this.cols = [
-      { field: 'numCommande', header: 'Num Commande' },
-      { field: 'userId', header: 'User ID' },
-      { field: 'statut', header: 'Status' },
-      { field: 'prixTotal', header: 'Total Price' },
-      { field: 'modePaiement', header: 'Payment Mode' }
-    ];
-  }
-
-  showDetailsDialog(commande: Commande) {
-    this.selectedCommande = { ...commande };
-    this.displayDetailsDialog = true;
-  }
-
-  closeDetailsDialog() {
-    this.displayDetailsDialog = false;
-    this.selectedCommande = null;
-  }
-
-  openNew() {
-    this.selectedCommande = {} as Commande;
-    this.displayDetailsDialog = true;
-  }
-
-  editCommande(commande: Commande) {
-    this.selectedCommande = { ...commande };
-    this.displayDetailsDialog = true;
-  }
-
-  hideDialog() {
-    this.displayDetailsDialog = false;
-    this.selectedCommande = null;
-  }
-
-  sauvegarderCommande() {
-    if (this.selectedCommande) { // Check if selectedCommande is not null or undefined
-      if (this.selectedCommande._id) {
-        this.commandeService.updateCommande(this.selectedCommande).then(() => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande updated', life: 3000 });
-          this.hideDialog();
-        }).catch(error => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error updating commande', life: 3000 });
-          console.error('Error updating commande', error);
-        });
-      } else {
-        this.commandeService.addCommande(this.selectedCommande).then((addedCommande) => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande added', life: 3000 });
-          this.hideDialog();
-          this.commandes = [...this.commandes, addedCommande];
-        }).catch(error => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error adding commande', life: 3000 });
-          console.error('Error adding commande', error);
-        });
-      }
-    } else {
-      // Handle the case where selectedCommande is null
-      console.error('selectedCommande is null or undefined');
     }
-  }
-  
-  
 
-  deleteCommande(id: string) {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this commande?',
-      accept: () => {
-        this.commandeService.deleteCommande(id).then(() => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande deleted', life: 3000 });
-          this.commandes = this.commandes.filter(c => c._id !== id);
-        }).catch(error => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error deleting commande', life: 3000 });
-          console.error('Error deleting commande', error);
-        });
-      }
-    });
-  }
+    findIndexById(id: string): number {
+        let index = -1;
+        for (let i = 0; i < this.products.length; i++) {
+            if (this.products[i].id === id) {
+                index = i;
+                break;
+            }
+        }
 
-cancelCommande(id: string) {
-  console.log(`Attempting to cancel order with id ${id}`);
-  
-  this.commandeService.cancelOrder(id).subscribe(
-    (response) => {
-      console.log(`Successfully cancelled order with id ${id}`, response);
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Commande cancelled', life: 3000 });
-      this.commandes = this.commandes.map(c => c._id === id ? { ...c, statut: 'annulée' } : c);
-    },
-    (error) => {
-      console.error(`Error cancelling order with id ${id}`, error);
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error cancelling commande', life: 3000 });
+        return index;
     }
-  );
-}
 
-  
- 
+    createId(): string {
+        let id = '';
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        for (let i = 0; i < 5; i++) {
+            id += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return id;
+    }
 
-  
+    onGlobalFilter(table: Table, event: Event) {
+        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
+    }
 }
