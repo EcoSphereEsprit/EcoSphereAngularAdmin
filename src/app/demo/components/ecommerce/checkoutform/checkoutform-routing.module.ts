@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { CheckoutFormComponent } from './checkoutform.component';
+import { CheckoutComponent } from './checkoutform.component';
 
 @NgModule({
     imports: [RouterModule.forChild([
-        { path: '', component: CheckoutFormComponent }
+        { path: '', component: CheckoutComponent }
     ])],
     exports: [RouterModule]
 })
