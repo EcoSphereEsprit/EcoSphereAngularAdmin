@@ -4,6 +4,7 @@ import { ProductService } from './../../../service/product.service';
 
 
 import { Component, ViewChildren, QueryList, ElementRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 interface Product {
     name: string;
@@ -24,6 +25,7 @@ interface Image {
 }
 
 @Component({
+    selector: 'app-new-product',
     templateUrl: './newproduct.component.html',
     styleUrls: ['./newproduct.component.scss']
 })
@@ -34,7 +36,7 @@ export class NewProductComponent implements OnInit {
     public allCatgories : any = [] ;
 
 
-    constructor(private CategoryService : CategoryService , private ProductService : ProductService )
+    constructor(private CategoryService : CategoryService , private ProductService : ProductService , public router: Router, )
     {
 
     }
@@ -129,7 +131,10 @@ export class NewProductComponent implements OnInit {
         body.categorie = this.allCatgories.filter((c: any)=> c.name === this.product.categorie)[0]._id ;
 
         this.ProductService.createNewProduct(body).subscribe((result: any) => {
+            this.router.navigate(["/productList/list"]);
+
             console.log(result);
+
         }, (err)=> {
             console.log(err);
 

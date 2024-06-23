@@ -1,14 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router , NavigationEnd } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DataView } from 'primeng/dataview';
 import { Product } from 'src/app/demo/api/product';
 import { CategoryService } from 'src/app/demo/service/category.service';
 import { ProductService } from 'src/app/demo/service/product.service';
 
+
 @Component({
     templateUrl: './listdemo.component.html'
 })
 export class ListDemoComponent implements OnInit {
+
 
     products: Product[] = [];
     initialProducts: Product[] = [];
@@ -19,19 +22,25 @@ export class ListDemoComponent implements OnInit {
     sortOrder: number = 0;
 
     sortField: string = '';
+    
 
 
     targetCities: any[] = [];
     allCatgories : any = [];
     orderCities: any[] = [];
     filterOptions : any = [];
-    filterOption : string = ""
+    ProductIdTobeDeleted : string = "";
+    filterOption : string = "none"
+    myFilterName : string = "";
+    sortOption : string = "default";
+    deleteProductsDialog: boolean = false;
+    category : any ;
     minPrice : number = 0;
-    maxPrice : number = 1200;
+    maxPrice : number = 0;
 
-    constructor(private productService: ProductService , private CategoryService : CategoryService) { }
+    constructor(private productService: ProductService , private CategoryService : CategoryService, public router: Router, private route: ActivatedRoute) { }
 
-    ngOnInit() {
+    ngOnInit() {      
         this.productService.getProductList().subscribe((products : any) => {
             this.products = products ;
             this.initialProducts = products ;
@@ -54,12 +63,15 @@ export class ListDemoComponent implements OnInit {
        
 
         this.sortOptions = [
-            { label: 'Date High to Low', value: '!price' },
-            { label: 'Date Low to High', value: 'price' },
+            { label: 'Default', value: 'default' },
+            { label: 'Date High to Low', value: 'desc' },
+            { label: 'Date Low to High', value: 'asc' },
         
         ];
 
         this.filterOptions = [
+            { label: '-None-', value: 'none' },
+            { label: 'Name', value: 'name' },
             { label: 'Price', value: 'price' },
             { label: 'Category', value: 'category' },
             { label: 'Available', value: 'available' },
@@ -69,22 +81,23 @@ export class ListDemoComponent implements OnInit {
 
     onSortChange(event: any) {
         const value = event.value;
-
-        if (value.indexOf('!') === 0) {
-            this.sortOrder = -1;
-            this.sortField = value.substring(1, value.length);
+        if (value != 'default') {
+            this.productService.sortByDate(this.sortOption).subscribe((filtered : any) => {
+                this.products = filtered ;
+            }, (err)=> {
+                console.log(err);
+    
+            });  
+           
         } else {
-            this.sortOrder = 1;
-            this.sortField = value;
+            this.products = this.initialProducts ;
+
         }
     }
 
 
     onFilterChange(event: any) {
         this.filterOption = event.value;
-        console.log("@@@@@@@@@@@@@@@@@@@@@@@", event)
-
-       
     }
 
     filter() {
@@ -98,13 +111,23 @@ export class ListDemoComponent implements OnInit {
             });  
         } 
         else if (this.filterOption === "category") {
-            // this.productService.filterProductsByPrice(this.minPrice , this.maxPrice).subscribe((filtered : any) => {
-            //     this.products = filtered ;
+            this.productService.filterProductsByCategory(this.category.name).subscribe((filtered : any) => {
+                this.products = filtered ;
               
-            // }, (err)=> {
-            //     console.log(err);
+            }, (err)=> {
+                console.log(err);
     
-            // });  
+            });  
+        }
+
+        else if (this.filterOption === "name") {
+            this.productService.filterProductsByName(this.myFilterName).subscribe((filtered : any) => {
+                this.products = filtered ;
+              
+            }, (err)=> {
+                console.log(err);
+    
+            });  
         }
     }
 
@@ -120,5 +143,54 @@ export class ListDemoComponent implements OnInit {
     clearFilter()
     {
         this.products = this.initialProducts;
+        this.filterOption = "none"
+        this.filterOptions = [];
     }
+
+    getAvailability(isAvailable : boolean)
+    {
+        return isAvailable ? "In Stock" : "Out of Stock";
+    }
+
+    deleteProduct()
+    {
+        this.productService.deleteProduct(this.ProductIdTobeDeleted).subscribe((res : any) => {
+            if (res)
+                {
+                    this.productService.getProductList().subscribe((products : any) => {
+                        this.products = products ;
+                        this.initialProducts = products ;
+                        if (products)
+                            {
+                                this.CategoryService.getCategories().subscribe((categories: any) => {
+                                    this.allCatgories = categories
+                                }, (err)=> {
+                                    console.log(err);
+                        
+                                });
+                            }
+                    }, (err)=> {
+                        console.log(err);
+            
+                    });    
+                  
+
+                }
+          
+        }, (err)=> {
+            console.log(err);
+
+        });  
+    }
+    editProduct(product : any)
+    {
+        this.router.navigate(['/ecommerce/new-product'], { queryParams: { product : product } });
+    }
+
+    deleteSelectedProducts(id : string) {
+        this.deleteProductsDialog = true;
+        this.ProductIdTobeDeleted = id ;
+    }
+
+
 }
