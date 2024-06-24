@@ -34,7 +34,7 @@ import { CrudRoutingModule } from './crud-routing.module';
 		DropdownModule,
 		RadioButtonModule,
 		InputNumberModule,
-		DialogModule
+		DialogModule,FileUploadModule
 	],
 	declarations: [CrudComponent]
 })

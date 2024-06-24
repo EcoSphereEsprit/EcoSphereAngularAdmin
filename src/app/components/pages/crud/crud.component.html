@@ -5,6 +5,15 @@
            [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
            currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} commandes"
            [(selection)]="selectedCommande" selectionMode="single" [rowHover]="true" dataKey="_id">
+
+    <!-- Toolbar avec p-fileUpload -->
+    <p-toolbar styleClass="mb-4">
+      <ng-template pTemplate="right">
+        <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+        <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+      </ng-template>
+    </p-toolbar>
+
     <ng-template pTemplate="caption">
       <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
         <span class="block mt-2 md:mt-0 p-input-icon-left">
@@ -21,7 +30,7 @@
           <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
         </th>
         <th pSortableColumn="numCommande">Numéro de Commande <p-sortIcon field="numCommande"></p-sortIcon></th>
-        <th>Nom des Produits</th>
+        <th pSortableColumn="produit">Nom des Produits <p-sortIcon field="numCommande"></p-sortIcon></th>
         <th pSortableColumn="statut">Statut <p-sortIcon field="statut"></p-sortIcon></th>
         <th pSortableColumn="prixTotal">Prix Total <p-sortIcon field="prixTotal"></p-sortIcon></th>
         <th pSortableColumn="modePaiement">Mode de Paiement <p-sortIcon field="modePaiement"></p-sortIcon></th>
@@ -44,10 +53,19 @@
             <div>{{ produit?.idProduit?.name }}</div>
           </ng-container>
         </td>
-        <td style="min-width: 10rem;">
-          <span class="p-column-title">Statut</span>
-          {{commande.statut}}
-        </td>
+      
+          <td style="min-width: 10rem;">
+            <span class="p-column-title">Statut Livraison</span>
+            <ng-container *ngIf="isAdmin(); else statusDisplay">
+              <p-dropdown [options]="livraisonStatusOptions"
+                          [(ngModel)]="commande.statutLivraison"
+                          (onChange)="updateLivraisonStatut(commande._id, $event.value)">
+              </p-dropdown>
+            </ng-container>
+            <ng-template #statusDisplay>
+              {{ getLivraisonStatut(commande) }}
+            </ng-template>
+          </td>        
         <td style="min-width: 8rem;">
           <span class="p-column-title">Prix Total</span>
           {{commande.prixTotal | currency:'USD'}}
@@ -57,11 +75,15 @@
           {{commande.modePaiement}}
         </td>
         <td>
-          <div class="flex">
-            <button pButton type="button" label="Détails" icon="pi pi-info-circle"
-                    (click)="showDetailsDialog(commande)"></button>
-            <button pButton type="button" label="Annuler" icon="pi pi-times" class="p-button-danger"
-                    (click)="showCancellationConfirmation(commande._id)" *ngIf="commande.statut !== 'annulée'"></button>
+          <div style="display: flex; align-items: center;">
+            <button pButton type="button" icon="pi pi-info-circle" (click)="showDetailsDialog(commande)">
+              Détails
+            </button>
+            <!-- Affichage conditionnel du bouton Annuler -->
+            <button *ngIf="!isAdmin()" pButton type="button" icon="pi pi-times"
+                    class="p-button-danger" (click)="showCancellationConfirmation(commande._id)">
+              Annuler
+            </button>
           </div>
         </td>
       </tr>
@@ -70,80 +92,77 @@
 </div>
 
 <!-- Dialog pour les détails de commande -->
-  <p-dialog [(visible)]="displayDetailsDialog" [style]="{ width: '800px' }" header="Détails de la Commande" [modal]="true">
-    <ng-template pTemplate="content">
-      <div class="p-grid">
-        <div class="p-col-12">
-          <!-- Détails de la commande -->
-          <div class="field">
-            <label for="numCommande">Numéro de Commande</label>
-            <input type="text" pInputText id="numCommande" [value]="selectedCommande?.numCommande" disabled>
-          </div>
-          <div class="field">
-            <label for="statut">Statut</label>
-            <input type="text" pInputText id="statut" [value]="selectedCommande?.statut" disabled>
-          </div>
-          <div class="field">
-            <label for="prixTotal">Prix Total</label>
-            <input type="text" pInputText id="prixTotal" [value]="selectedCommande?.prixTotal | currency:'USD'" disabled>
-          </div>
-          <div class="field">
-            <label for="modePaiement">Mode de Paiement</label>
-            <input type="text" pInputText id="modePaiement" [value]="selectedCommande?.modePaiement" disabled>
-          </div>
+<p-dialog [(visible)]="displayDetailsDialog" [style]="{ width: '800px' }" header="Détails de la Commande" [modal]="true">
+  <ng-template pTemplate="content">
+    <div class="p-grid">
+      <div class="p-col-12">
+        <!-- Détails de la commande -->
+        <div class="field">
+          <label for="numCommande">Numéro de Commande</label>
+          <input type="text" pInputText id="numCommande" [value]="selectedCommande?.numCommande" disabled>
+        </div>
+        <div class="field">
+          <label for="statut">Statut</label>
+          <input type="text" pInputText id="statut" [value]="selectedCommande?.statut" disabled>
+        </div>
+        <div class="field">
+          <label for="prixTotal">Prix Total</label>
+          <input type="text" pInputText id="prixTotal" [value]="selectedCommande?.prixTotal | currency:'TND'" disabled>
+        </div>
+        <div class="field">
+          <label for="modePaiement">Mode de Paiement</label>
+          <input type="text" pInputText id="modePaiement" [value]="selectedCommande?.modePaiement" disabled>
+        </div>
 
-          <!-- Informations de livraison -->
-          <div>
-            <h5>Informations de Livraison</h5>
-            <p>
-              Nom: {{ selectedCommande?.infosLivraison?.nom }}<br>
-              Prénom: {{ selectedCommande?.infosLivraison?.prenom }}<br>
-              Adresse: {{ selectedCommande?.infosLivraison?.adresse }}<br>
-              Ville: {{ selectedCommande?.infosLivraison?.ville }}<br>
-              Code Postal: {{ selectedCommande?.infosLivraison?.codePostal }}<br>
-              Pays: {{ selectedCommande?.infosLivraison?.pays }}<br>
-              Téléphone: {{ selectedCommande?.infosLivraison?.telephone }}
-            </p>
-          </div>
+        <!-- Informations de livraison -->
+        <div>
+          <h5>Informations de Livraison</h5>
+          <p>
+            Nom: {{ selectedCommande?.infosLivraison?.nom }}<br>
+            Prénom: {{ selectedCommande?.infosLivraison?.prenom }}<br>
+            Adresse: {{ selectedCommande?.infosLivraison?.adresse }}<br>
+            Ville: {{ selectedCommande?.infosLivraison?.ville }}<br>
+            Code Postal: {{ selectedCommande?.infosLivraison?.codePostal }}<br>
+            Pays: {{ selectedCommande?.infosLivraison?.pays }}<br>
+            Téléphone: {{ selectedCommande?.infosLivraison?.telephone }}
+          </p>
+        </div>
 
-          <!-- Informations sur les produits -->
-          <div>
-            <h5>Informations sur les Produits</h5>
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Nom du Produit</th>
-                  <th>Quantité</th>
-                  <th>Prix Unitaire</th>
+        <!-- Informations sur les produits -->
+        <div>
+          <h5>Informations sur les Produits</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nom du Produit</th>
+                <th>Quantité</th>
+                <th>Prix Unitaire</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="selectedCommande?.produits && selectedCommande?.produits?.length; else noProducts">
+                <tr *ngFor="let produit of selectedCommande?.produits">
+                  <td>{{ produit?.idProduit?.name }}</td>
+                  <td>{{ produit?.quantite }}</td>
+                  <td>{{ produit?.prixUnitaire | currency:'USD' }}</td>
                 </tr>
-              </thead>
-              <tbody>
-                <ng-container *ngIf="selectedCommande?.produits && selectedCommande?.produits?.length; else noProducts">
-                  <tr *ngFor="let produit of selectedCommande?.produits">
-                    <td>{{ produit?.idProduit?.name }}</td>
-                    <td>{{ produit?.quantite }}</td>
-                    <td>{{ produit?.prixUnitaire | currency:'USD' }}</td>
-                  </tr>
-                </ng-container>
-                <ng-template #noProducts>
-                  <tr>
-                    <td colspan="3">Aucun produit trouvé</td>
-                  </tr>
-                </ng-template>
-              </tbody>
-            </table>
-          </div>
+              </ng-container>
+              <ng-template #noProducts>
+                <tr>
+                  <td colspan="3">Aucun produit trouvé</td>
+                </tr>
+              </ng-template>
+            </tbody>
+          </table>
         </div>
       </div>
-    </ng-template>
-    <ng-template pTemplate="footer">
-      <button pButton type="button" label="Fermer" icon="pi pi-times" class="p-button-text" (click)="closeDetailsDialog()"></button>
-    </ng-template>
-  </p-dialog>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Fermer" icon="pi pi-times" class="p-button-text" (click)="closeDetailsDialog()"></button>
+  </ng-template>
+</p-dialog>
 
-
-
-<!-- Dialog for Cancellation Confirmation -->
 <!-- Dialog for Cancellation Confirmation -->
 <dialog #cancelConfirmationModal class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
@@ -156,7 +175,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cancelConfirmationModal.close()">Fermer</button>
-        <button type="button" class="btn btn-danger" (click)="cancelCommande(selectedCommande?._id)">Confirmer</button>
+        <button *ngIf="!isAdmin()" type="button" class="btn btn-danger" (click)="cancelCommande(selectedCommande?._id)">Confirmer</button>
       </div>
     </div>
   </div>

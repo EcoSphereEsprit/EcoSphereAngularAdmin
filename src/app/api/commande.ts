@@ -2,6 +2,8 @@ export interface Commande {
   _id?: string;
   numCommande?: string;
   userId?: string;
+  statutLivraison?: string; // Ajoutez ce champ si nécessaire
+
   produits?: {
     idProduit?: {
       _id?: string;
@@ -22,7 +24,6 @@ export interface Commande {
   }[];
   statut?: string;
   statutPaiement?: string;
-  statutLivraison?: string;
   prixTotal?: number;
   modePaiement?: string;
   coupon?: any;
@@ -37,6 +38,7 @@ export interface Commande {
     pays?: string;
     telephone?: string;
   };
+
   historiqueStatuts?: {
     date?: string;
     statut?: string;

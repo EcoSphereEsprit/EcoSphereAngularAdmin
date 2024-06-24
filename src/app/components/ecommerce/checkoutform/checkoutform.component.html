@@ -58,11 +58,11 @@
                     <span class="block font-medium mb-5">Méthode de Paiement</span>
                     <div class="flex items-center mb-2">
                         <input type="radio" id="card" name="paymentMethod" value="card" [checked]="paymentMethod === 'card'" (change)="updatePaymentMethod('card')">
-                        <label for="card" class="ml-2 text-900">Carte de Crédit</label>
+                        <label for="card" class="ml-2 text-900">Paiement par carte</label>
                     </div>
                     <div class="flex items-center">
                         <input type="radio" id="cash" name="paymentMethod" value="cash" [checked]="paymentMethod === 'cash'" (change)="updatePaymentMethod('cash')">
-                        <label for="cash" class="ml-2 text-900">Paiement à la livraison (+7 Dinar)</label>
+                        <label for="cash" class="ml-2 text-900">Paiement à la Livraison (+7dt de frais de livraison)</label>
                     </div>
                 </div>
 

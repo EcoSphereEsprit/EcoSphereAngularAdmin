@@ -15,7 +15,6 @@ export class CommandeService {
   constructor(private http: HttpClient) {}
 
   getCommandes(): Observable<Commande[]> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -28,7 +27,6 @@ export class CommandeService {
   }
 
   getCommandeDetails(id: string): Observable<Commande> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -52,7 +50,6 @@ export class CommandeService {
 
 
   ajouterCommande(commandeData: any): Observable<any> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
     // Récupération du token d'authentification depuis le local storage
     const token = localStorage.getItem('token');
     if (!token) {
@@ -92,7 +89,6 @@ export class CommandeService {
   
 
   cancelOrder(id: string): Observable<any> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -106,10 +102,28 @@ export class CommandeService {
   }
   
   
+  updateLivraisonStatut(id: string, newStatut: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+      console.error('Token is missing');
+    }
   
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json' // Assurez-vous que le type de contenu est correct
+    });
+  
+    return this.http.put(`http://localhost:9090/commandes/${id}/statut-livraison`, { statutLivraison: newStatut }, { headers: headers });
+  }
+  
+  
+
+
+
+
    // Nouvelle méthode pour récupérer les commandes filtrées par statut
    getCommandesByStatut(statut: string): Observable<Commande[]> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTUyNTg0LCJleHAiOjE3MTkxNTYxODR9.kfRzxrQNNeuq9vMAmSEyrSRoeUTyt2FtQoBo5OkkYnM');
 
     const token = localStorage.getItem('token');
     if (!token) {
