@@ -9,9 +9,11 @@ import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { DropdownModule } from 'primeng/dropdown';
 import { CheckoutComponent } from './checkoutform.component';
+import { DialogModule } from 'primeng/dialog';
 
 @NgModule({
     imports: [
+        DialogModule,
         CommonModule,
         CheckoutFormRoutingModule,
         FormsModule,

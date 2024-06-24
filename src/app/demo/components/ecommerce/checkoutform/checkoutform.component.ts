@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommandeService } from '../../../../service/commande.service';
-import { Commande } from '../../../../api/commande'; // Adjust path as per your application structure
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-checkout',
@@ -12,19 +11,29 @@ export class CheckoutComponent implements OnInit {
   checkoutForm!: FormGroup;
   cartItems: any[] = [];
   total: number = 0;
-  paymentMethod: string = 'card'; // Default payment method
-  paymentOptions: string[] = ['card', 'cash']; // Payment options
-    userId: any;
+  paymentMethod: string = 'card';
+  paymentOptions: string[] = ['card', 'cash'];
+  showCardPopup: boolean = false;
+  cardForm!: FormGroup;
+  emailSent: boolean = false;
+  secretCode: string = '';
+  secretCodeSent: boolean = false;
+  codeInput: string = '';
 
   constructor(
     private formBuilder: FormBuilder,
-    private commandeService: CommandeService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
     this.loadCartItems();
     this.calculateTotal();
+    this.cardForm = this.formBuilder.group({
+      cardNumber: ['', Validators.required],
+      cardCode: ['', Validators.required],
+      secretCodeInput: ['', Validators.required]
+    });
   }
 
   initializeForm(): void {
@@ -64,61 +73,44 @@ export class CheckoutComponent implements OnInit {
   updatePaymentMethod(method: string): void {
     this.paymentMethod = method;
     this.calculateTotal();
+    this.showCardPopup = method === 'card';
   }
 
   processCheckout(): void {
     if (this.checkoutForm.valid) {
-      // Form is valid, proceed with checkout
-      const formData = this.checkoutForm.value;
-      const commandeData = {
-        numCommande: `CMD${Math.floor(Math.random() * 10000)}`,
-        produits: this.cartItems.map(item => ({
-          idProduit: '665a3242c0e86fbef95cda57',
-          quantite: item.quantity,
-          prixUnitaire: item.price
-        })),
-        infosLivraison: {
-          nom: formData.name,
-          prenom: formData.lastName,
-          adresse: formData.address,
-          ville: formData.city,
-          codePostal: formData.postalCode,
-          pays: 'Tunis',
-          telephone: formData.phoneNumber
-        },
-        prixTotal: this.total,
-        modePaiement: formData.paymentMethod,
-        coupon: null,
-        pourcentageRéduction: 0,
-
-      };
-  
-      // Call commandeService to add order
-      this.commandeService.ajouterCommande(commandeData).subscribe(
-        (response: Commande) => {
-          console.log('Commande ajoutée avec succès:', response);
-          // Display order details or redirect as needed
-        },
-        error => {
-          console.error('Erreur lors de l\'ajout de la commande:', error);
-          // Handle error
-        }
-      );
-    } else {
-      // Form is invalid, log validation errors
-      console.error('Form validation error. Please check your input.');
-      // Optional: Provide user feedback on invalid fields
-      Object.keys(this.checkoutForm.controls).forEach(key => {
-        const controlErrors = this.checkoutForm.get(key)?.errors;
-        if (controlErrors != null) {
-          Object.keys(controlErrors).forEach(keyError => {
-            console.error(`Validation error for ${key}: ${keyError}`);
-          });
-        }
-      });
+      if (this.paymentMethod === 'card') {
+        this.showCardPopup = true; // Afficher le formulaire de carte pour saisir les détails
+      } else {
+        this.createInvoice('pending');
+      }
     }
   }
-  
+
+  sendConfirmationEmail(): void {
+    this.secretCode = this.generateSecretCode();
+    console.log('Code secret généré (simulé) :', this.secretCode); // Affichage dans la console du navigateur
+    this.emailSent = true;
+    this.secretCodeSent = true;
+    alert('Email envoyé avec le code secret (simulé)');
+  }
+
+  submitCardDetails(): void {
+    if (this.cardForm.valid && this.secretCodeSent) {
+      const cardDetails = this.cardForm.value;
+      if (cardDetails.secretCodeInput === this.secretCode) {
+        this.createInvoice('paid');
+      } else {
+        console.error('Code secret incorrect. Veuillez vérifier et réessayer.');
+      }
+    } else {
+      console.error('Veuillez d\'abord générer le code secret en cliquant sur "Envoyer le code".');
+    }
+  }
+
+  createInvoice(status: string): void {
+    console.log('Création de la facturation avec statut :', status);
+    this.router.navigate(['/gestion/crud_commande']);
+  }
 
   updateQuantity(event: number, item: any): void {
     const index = this.cartItems.findIndex(cartItem => cartItem.id === item.id);
@@ -133,5 +125,9 @@ export class CheckoutComponent implements OnInit {
     this.cartItems.splice(index, 1);
     localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
     this.calculateTotal();
+  }
+
+  generateSecretCode(): string {
+    return Math.random().toString(36).substr(2, 6).toUpperCase();
   }
 }

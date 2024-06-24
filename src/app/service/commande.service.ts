@@ -15,7 +15,7 @@ export class CommandeService {
   constructor(private http: HttpClient) {}
 
   getCommandes(): Observable<Commande[]> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -24,11 +24,11 @@ export class CommandeService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
-    return this.http.get<Commande[]>(this.apiUrl, { headers });
+    return this.http.get<Commande[]>('http://localhost:9090/commandes', { headers });
   }
 
   getCommandeDetails(id: string): Observable<Commande> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -52,24 +52,23 @@ export class CommandeService {
 
 
   ajouterCommande(commandeData: any): Observable<any> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDk1MTQxLCJleHAiOjE3MTkwOTg3NDF9.xp4eRqkP_QdEJCiA-AfTksY3d0Fziagx7nN72Yy96tw');
-    console.log('Données envoyées depuis le frontend vers le backend pour ajouter une commande :', commandeData);
-    const commandeAEnvoyer = { ...commandeData };
-
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
+    // Récupération du token d'authentification depuis le local storage
     const token = localStorage.getItem('token');
     if (!token) {
-      console.error('Token is missing');
-      // Handle error or return an observable with an error
+        console.error('Token is missing');
     }
 
+    // Ajout du token d'authentification dans les headers
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post<any>(`http://localhost:9090/commandes/ajouter`, commandeAEnvoyer, { headers });
-  }
+    // Appel HTTP POST vers l'API backend pour ajouter la commande
+    return this.http.post<any>(`http://localhost:9090/commandes/ajouter`, commandeData, { headers });
+}
 
-  
+
 
   updateCommande(commande: Commande): Promise<Commande> {
     const url = `${this.apiUrl}/${commande._id}`;
@@ -93,7 +92,7 @@ export class CommandeService {
   
 
   cancelOrder(id: string): Observable<any> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTYyMTAwLCJleHAiOjE3MTkxNjU3MDB9.dThQHD8aulWqMWjFCmW5z1Gq6DP0ExrXoMGNCAUQj-M')
 
     const token = localStorage.getItem('token');
     if (!token) {
@@ -110,7 +109,7 @@ export class CommandeService {
   
    // Nouvelle méthode pour récupérer les commandes filtrées par statut
    getCommandesByStatut(statut: string): Observable<Commande[]> {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MDc1NzU0LCJleHAiOjE3MTkwNzkzNTR9.RjNXKZy-3PR-IBD9dESFXVNegTY7ZhTXmVfLMdnmBoY');
+    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJTQU5BQkgiLCJyb2xlIjoiVVNFUiIsIklkIjoiNjY1YTMwNTc5ZWI1ZWZjN2NhMzBjZWJkIiwiaWF0IjoxNzE5MTUyNTg0LCJleHAiOjE3MTkxNTYxODR9.kfRzxrQNNeuq9vMAmSEyrSRoeUTyt2FtQoBo5OkkYnM');
 
     const token = localStorage.getItem('token');
     if (!token) {

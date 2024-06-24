@@ -83,8 +83,10 @@
 </div>
 
 <!-- Card Payment Popup -->
+
+    <!-- Card Payment Popup -->
 <p-dialog header="Paiement par carte" [(visible)]="showCardPopup" [modal]="true" [closable]="false" [dismissableMask]="true" [style]="{ width: '350px' }">
-    <form [formGroup]="cardForm" (ngSubmit)="submitCardDetails()">
+    <form [formGroup]="cardForm" (ngSubmit)="submitCardDetails()" class="p-fluid">
         <div class="field mb-4">
             <label for="cardNumber" class="block">Numéro de carte</label>
             <input id="cardNumber" type="text" pInputText formControlName="cardNumber">
@@ -93,11 +95,16 @@
             <label for="cardCode" class="block">Code de sécurité</label>
             <input id="cardCode" type="text" pInputText formControlName="cardCode">
         </div>
-        <button type="button" pButton label="Envoyer le code" (click)="sendConfirmationEmail()"></button>
+        <button type="button" pButton label="Envoyer le code" (click)="generateAndSendSecretCode()"></button>
+
         <div class="field mb-4 mt-4">
             <label for="secretCodeInput" class="block">Code secret</label>
             <input id="secretCodeInput" type="text" pInputText formControlName="secretCodeInput">
         </div>
-        <button type="submit" pButton label="Confirmer paiement"></button>
+        <div class="flex justify-between">
+            <button type="submit" pButton (click)="confirmOrderPayment()" class="p-button p-button-primary" label="Confirmer paiement"></button>
+            <button type="button" pButton icon="pi pi-times" class="p-button-text" (click)="showCardPopup = false"></button>
+        </div>
     </form>
 </p-dialog>
+
