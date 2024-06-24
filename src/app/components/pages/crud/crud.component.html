@@ -63,7 +63,7 @@
               </p-dropdown>
             </ng-container>
             <ng-template #statusDisplay>
-              {{ getLivraisonStatut(commande) }}
+              {{ getLivraisonStatut(commande)}}
             </ng-template>
           </td>        
         <td style="min-width: 8rem;">
@@ -103,7 +103,7 @@
         </div>
         <div class="field">
           <label for="statut">Statut</label>
-          <input type="text" pInputText id="statut" [value]="selectedCommande?.statut" disabled>
+          <input type="text" pInputText id="statut" [value]="selectedCommande?.statutLivraison" disabled>
         </div>
         <div class="field">
           <label for="prixTotal">Prix Total</label>
@@ -175,7 +175,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cancelConfirmationModal.close()">Fermer</button>
-        <button *ngIf="!isAdmin()" type="button" class="btn btn-danger" (click)="cancelCommande(selectedCommande?._id)">Confirmer</button>
+        <button *ngIf="!isAdmin()" type="button" class="btn btn-danger" (click)="updateLivraisonStatut(selectedCommande?._id,'annulée')">Confirmer</button>
       </div>
     </div>
   </div>

@@ -5,6 +5,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Commande } from '../api/commande';
 
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
@@ -38,15 +40,6 @@ export class CommandeService {
     return this.http.get<Commande>(`${this.apiUrl}/${id}`, { headers });
   }
 
-  addCommande(commande: Commande): Promise<Commande> {
-    return this.http.post<Commande>(this.apiUrl, commande)
-      .toPromise()
-      .then(createdCommande => createdCommande || {})
-      .catch(error => {
-        console.error('Error adding commande:', error);
-        throw error;
-      });
-  }
 
 
   ajouterCommande(commandeData: any): Observable<any> {
@@ -67,16 +60,7 @@ export class CommandeService {
 
 
 
-  updateCommande(commande: Commande): Promise<Commande> {
-    const url = `${this.apiUrl}/${commande._id}`;
-    return this.http.put<Commande>(url, commande)
-      .toPromise()
-      .then(updatedCommande => updatedCommande || {})
-      .catch(error => {
-        console.error('Error updating commande:', error);
-        throw error;
-      });
-  }
+ 
 
   deleteCommande(id: string): Promise<void> {
     const url = `${this.apiUrl}/${id}`;
@@ -88,19 +72,29 @@ export class CommandeService {
   }
   
 
-  cancelOrder(id: string): Observable<any> {
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('Token is missing');
-    }
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-    console.log(`Sending request to cancel order with id ${id}`);  // Log
-    return this.http.put(`http://localhost:9090/commandes/${id}/annuler`, {}, { headers });
-  }
   
+  cancelOrder(id: string): Observable<any> {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+          console.error('Token is missing');
+          return throwError('Token is missing');
+      }
+    
+      const headers = new HttpHeaders({
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+      });
+  
+      console.log(`Sending request to cancel order with id ${id}`);
+  
+      return this.http.put(`http://localhost:9090/commandes/${id}/annuler`, null, { headers }).pipe(
+          catchError(error => {
+              console.error('Error cancelling order:', error);
+              return throwError(error); // Renvoie l'erreur pour la gestion supplémentaire côté composant
+          })
+      );
+  }
   
   updateLivraisonStatut(id: string, newStatut: string): Observable<any> {
     const token = localStorage.getItem('token');

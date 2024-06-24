@@ -2,7 +2,7 @@ export interface Commande {
   _id?: string;
   numCommande?: string;
   userId?: string;
-  statutLivraison?: string; // Ajoutez ce champ si nécessaire
+  statutLivraison: string; // Ajoutez ce champ si nécessaire
 
   produits?: {
     idProduit?: {
