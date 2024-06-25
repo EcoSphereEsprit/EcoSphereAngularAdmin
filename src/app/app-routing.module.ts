@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app.layout.component';
-import { authGuard } from './auth.guard';
+
 const routerOptions: ExtraOptions = {
     anchorScrolling: 'enabled'
 };
@@ -9,7 +9,7 @@ const routerOptions: ExtraOptions = {
 const routes: Routes = [
 
     {
-        path: 'tools', component: AppLayoutComponent,
+        path: '', component: AppLayoutComponent,
         children: [
             { path: '', loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule) },
             { path: 'uikit', data: { breadcrumb: 'UI Kit' }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule) },
@@ -22,10 +22,8 @@ const routes: Routes = [
             { path: 'apps', data: { breadcrumb: 'Apps' }, loadChildren: () => import('./demo/components/apps/apps.module').then(m => m.AppsModule) }
         ]
     },
-    { path: '', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule)},
-    { path: 'landing', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule), canActivate: [authGuard] },
+    { path: 'landing', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule) },
     { path: 'auth', data: { breadcrumb: 'Auth' }, loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },
-    { path: 'profile', data: { breadcrumb: 'Profile' }, loadChildren: () => import('./demo/components/profile/create/profilecreate.module').then(m => m.ProfileCreateModule) },
     { path: 'notfound', loadChildren: () => import('./demo/components/notfound/notfound.module').then(m => m.NotfoundModule) },
     { path: '**', redirectTo: '/notfound' }
 ];
