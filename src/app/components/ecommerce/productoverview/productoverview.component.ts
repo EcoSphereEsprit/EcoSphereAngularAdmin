@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Product } from '../../../api/product';
-import { ProductService } from '../../../service/product.service';
-import { Router } from '@angular/router'; // Importer le Router
+import { Router } from '@angular/router';
+import { Product } from '../../../demo/api/product';
+import { ProductService } from '../../../demo/service/product.service';
 
 @Component({
     templateUrl: './productoverview.component.html',
@@ -13,11 +13,11 @@ export class ProductOverviewComponent implements OnInit {
     liked: boolean = false;
     images: string[] = [];
     selectedImageIndex: number = 0;
-    quantity: number = 1;  // Quantité initiale
+    quantity: number = 1;  // Initial quantity
 
-    product: Product = { id: '', name: '', prix: 0 }; // Initialiser le produit avec id
+    product: Product = { id: '', name: '', prix: 0 };
 
-    constructor(private productService: ProductService, private router: Router) { } // Injecter le Router
+    constructor(private productService: ProductService, private router: Router) { }
 
     ngOnInit(): void {
         this.images = [
@@ -30,40 +30,41 @@ export class ProductOverviewComponent implements OnInit {
         const productId = '665a3242c0e86fbef95cda57';
         this.productService.getProductById(productId).then(data => {
             this.product = data;
+        }).catch(error => {
+            console.error('Error fetching product:', error);
         });
     }
 
     addToCart() {
+        // Clear cart from local storage
+        localStorage.removeItem('cart');
+
         const cartItem = {
             id: this.product.id,
             name: this.product.name,
             price: this.product.prix,
-            quantity: this.quantity ,
-            Image:this.images // Ajouter la quantité
+            quantity: this.quantity,
+            image: this.images[this.selectedImageIndex] // Assuming this should be 'image' instead of 'Image'
         };
 
-        // Récupérer les éléments existants dans le local storage
+        // Retrieve existing cart items from local storage
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-        // Vérifier si le produit existe déjà dans le panier
+        // Check if the product already exists in the cart
         const existingItemIndex = cart.findIndex((item: any) => item.id === this.product.id);
         if (existingItemIndex !== -1) {
-            // Si le produit existe déjà, augmenter la quantité
+            // If the product exists, update the quantity
             cart[existingItemIndex].quantity += this.quantity;
         } else {
-            // Sinon, ajouter le nouvel article au panier
+            // Otherwise, add the new item to the cart
             cart.push(cartItem);
         }
 
-        // Enregistrer le panier mis à jour dans le local storage
+        // Update the local storage with the updated cart items
         localStorage.setItem('cart', JSON.stringify(cart));
 
-        // Afficher le contenu du panier dans la console
-        console.log(cart);
-
+        // Alert and navigate to the shopping cart page
         alert('Product added to cart');
-
-        // Rediriger vers la page shopping-cart
         this.router.navigate(['/ecommerce/shopping-cart']);
     }
 }

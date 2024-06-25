@@ -1,58 +1,50 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { LayoutService } from 'src/app/layout/service/app.layout.service';
-import { UserServiceService } from 'src/app/demo/service/user.service.service';
-import { MessageService, Message } from 'primeng/api';
+import { HttpClient } from '@angular/common/http';
+import { LayoutService } from '../../../../layout/service/app.layout.service';
 
 @Component({
-  templateUrl: './login.component.html',
-  providers: [MessageService]
+  templateUrl: './login.component.html'
 })
 export class LoginComponent {
-  rememberMe: boolean = false;
-  username: string = '';
-  password: string = '';
+  loginForm: FormGroup;
 
   constructor(
-    public layoutService: LayoutService,
-    private userService: UserServiceService,
+    private fb: FormBuilder,
+    private http: HttpClient,
     private router: Router,
-    private messageService: MessageService
-  ) {}
+    public layoutService: LayoutService
+  ) {
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]],
+      rememberMe: [false]
+    });
+  }
 
   get dark(): boolean {
     return this.layoutService.config.colorScheme !== 'light';
   }
 
-  msgs: Message[] = [];
-  onLogin() {
-    if (!this.username || !this.password) {
-      return;
+  onSubmit() {
+    if (this.loginForm.valid) {
+      this.http.post<any>('http://localhost:9090/user/login', this.loginForm.value).subscribe(
+        response => {
+          if (response.token && response.user_id) {
+            localStorage.setItem('token', response.token);
+            localStorage.setItem('userId', response.user_id);
+            localStorage.setItem('role', response.role);
+            console.log('Token:', localStorage.getItem('token'));
+            console.log('User ID:', localStorage.getItem('userId'));
+            console.log('Role:', localStorage.getItem('role'));
+            this.router.navigate(['/']);
+          }
+        },
+        error => {
+          console.error('Login error:', error);
+        }
+      );
     }
-    this.userService.login(this.username, this.password).subscribe(
-      response => {
-        console.log('Login successful', response);
-  
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('role', response.role);
-        localStorage.setItem('userId', response.userId);
-  
-        this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success Message', detail: 'Login successful' });
-        this.router.navigate(['/landing']);
-      },
-      error => {
-        console.error('Login failed', error);
-  
-        const errorMessage = error.error?.message || 'Login failed';
-        this.messageService.add({ key: 'tst', severity: 'error', summary: 'LogIn failed', detail: errorMessage });
-        this.msgs = [];
-        this.msgs.push({ severity: 'error', summary: 'LogIn failed', detail: errorMessage });
-      }
-    );
-  }
-  
-
-  goToSignup(){
-    this.router.navigate(['/auth/register']);
   }
 }

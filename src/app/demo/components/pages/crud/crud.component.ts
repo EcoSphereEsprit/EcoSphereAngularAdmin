@@ -1,7 +1,7 @@
 import { CategoryService } from 'src/app/demo/service/category.service';
 import { Component, OnInit } from '@angular/core';
-import { Product } from 'src/app/demo/api/product';
-import { ProductService } from 'src/app/demo/service/product.service';
+import { Product } from '../../../api/product';
+import { ProductService } from '../../../service/product.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { Category } from 'src/app/demo/api/category';
@@ -47,6 +47,7 @@ export class CrudComponent implements OnInit {
             this.categoriesList = categories
         }, (err)=> {
             console.log(err);
+      //  this.productService.getProducts().then(data => this.products = data);
 
         });
         this.cols = [
