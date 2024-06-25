@@ -81,6 +81,28 @@
                     style=" background: rgba(68, 72, 109, 0.05);">
                     <span aria-hidden="true" class="p-button-label">Contact</span>
                 </button>
+                <button
+    *ngIf="!isloggedIn"
+    class="contact-button mr-3 p-button-outlined p-button-secondary p-button-text p-button p-component font-medium border-round text-gray-700"
+    style="background: rgba(68, 72, 109, 0.05);" 
+    (click)="goToLogin()">
+    <span aria-hidden="true" class="p-button-label">login</span>
+</button>
+
+<!-- Button visible when user is logged in -->
+<button
+    *ngIf="isloggedIn"
+    class="contact-button mr-3 p-button-outlined p-button-secondary p-button-text p-button p-component font-medium border-round text-gray-700"
+    style="background: rgba(68, 72, 109, 0.05);" 
+    (click)="logout()">
+    <span aria-hidden="true" class="p-button-label">logout</span>
+</button>
+
+<li #profile class="profile-item topbar-item" *ngIf="isloggedIn">
+    <a pStyleClass="@next" enterClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true" pRipple class="cursor-pointer">
+        <img class="border-circle" (click)="navigateToProfile()" [src]="avatarImageUrl" width="40" height="40">
+    </a>
+</li>
 
                 <a pRipple class="lg:hidden font-medium text-gray-700 cursor-pointer" pStyleClass="#menu"
                     enterClass="ng-hidden" enterActiveClass="px-fadein" leaveToClass="ng-hidden"

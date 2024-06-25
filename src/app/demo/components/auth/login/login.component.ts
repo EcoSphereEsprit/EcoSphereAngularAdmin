@@ -1,50 +1,69 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { LayoutService } from '../../../../layout/service/app.layout.service';
+import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import { UserServiceService } from 'src/app/demo/service/user.service.service';
+import { MessageService, Message } from 'primeng/api';
 
 @Component({
-  templateUrl: './login.component.html'
+  templateUrl: './login.component.html',
+  providers: [MessageService]
 })
-export class LoginComponent {
-  loginForm: FormGroup;
+export class LoginComponent implements OnInit {
+  rememberMe: boolean = false;
+  username: string = '';
+  password: string = '';
 
   constructor(
-    private fb: FormBuilder,
-    private http: HttpClient,
+    public layoutService: LayoutService,
+    private userService: UserServiceService,
     private router: Router,
-    public layoutService: LayoutService
-  ) {
-    this.loginForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-      rememberMe: [false]
-    });
+    private messageService: MessageService
+  ) { }
+  ngOnInit(): void {
+    if (localStorage.getItem('userId') != undefined || localStorage.getItem('userId') != null)
+      this.router.navigate(['/landing']);
   }
 
   get dark(): boolean {
     return this.layoutService.config.colorScheme !== 'light';
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      this.http.post<any>('http://localhost:9090/user/login', this.loginForm.value).subscribe(
-        response => {
-          if (response.token && response.user_id) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('userId', response.user_id);
-            localStorage.setItem('role', response.role);
-            console.log('Token:', localStorage.getItem('token'));
-            console.log('User ID:', localStorage.getItem('userId'));
-            console.log('Role:', localStorage.getItem('role'));
-            this.router.navigate(['/']);
-          }
-        },
-        error => {
-          console.error('Login error:', error);
-        }
-      );
+
+  msgs: Message[] = [];
+  onLogin() {
+    if (!this.username || !this.password) {
+      return;
     }
+    this.userService.login(this.username, this.password).subscribe({
+      next: response => {
+        console.log('Login successful', response);
+
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('role', response.role);
+        localStorage.setItem('userId', response.userId);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('avatrUrl', response.avatrUrl);
+        this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success Message', detail: 'Login successful' });
+        this.router.navigate(['/auth/verification']);
+      },
+      error: error => {
+        console.error('Login failed', error);
+
+        const errorMessage = error.error?.message || 'Login failed';
+        this.messageService.add({ key: 'tst', severity: 'error', summary: 'LogIn failed', detail: errorMessage });
+        this.msgs = [];
+        this.msgs.push({ severity: 'error', summary: 'LogIn failed', detail: errorMessage });
+      }
+    });
+  }
+
+
+  goToSignup() {
+    this.router.navigate(['/auth/register']);
+  }
+
+  goToForgetPassword() {
+    this.router.navigate(['/auth/forgotpassword']);
   }
 }
