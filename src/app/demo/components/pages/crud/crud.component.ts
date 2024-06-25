@@ -22,7 +22,11 @@ export class CrudComponent implements OnInit {
     deleteProductsDialog: boolean = false;
 
 
-    product: Category = {};
+    product: Category = {
+        _id: "",
+        name: "",
+        Nbr_produits: 0
+    };
 
     selectedProducts: Product[] = [];
 
@@ -60,7 +64,11 @@ export class CrudComponent implements OnInit {
     openNew() {
         this.edit = false ;
         this.add = true ;
-        this.product = {};
+        this.product  ={
+            _id: "",
+            name: "",
+            Nbr_produits: 0
+        };
         this.submitted = false;
         this.productDialog = true;
     }

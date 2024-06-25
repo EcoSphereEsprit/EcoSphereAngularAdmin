@@ -32,4 +32,8 @@ export class LandingComponent implements OnDestroy {
     navigateToHome() {
         this.router.navigate(["/productList/overlay"]);
     }
+
+    navigateToProducts() {
+        this.router.navigate(["/productList/list"]);
+    }
 }

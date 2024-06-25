@@ -67,14 +67,14 @@ export class NewProductComponent implements OnInit {
 ];
 
     product: Product = {
-        name: 'test',
-        prix: '1234',
-        quantite_stock: '4',
-        brand: 'dfghj',
+        name: '',
+        prix: '',
+        quantite_stock: '1',
+        brand: '',
         categorie: "",
         couleur: 'Blue',
         available: true,
-        description: 'testayayayya',
+        description: '',
         image: {
             name: "default",
             objectURL: ""
@@ -126,11 +126,14 @@ export class NewProductComponent implements OnInit {
         let body : any = this.product ; 
         let image : any = this.product.image;
         body.file = image;
+        body.description = body.description.replace(/<p>/g, "");
+        body.description = body.description.replace(/<\/p>/g, "");
+
         body.ImageName = image.file.name
         body.protocol = "http"
         body.categorie = this.allCatgories.filter((c: any)=> c.name === this.product.categorie)[0]._id ;
-
-        this.ProductService.createNewProduct(body).subscribe((result: any) => {
+        //Imen the createNewProduct2 is using the form DATA
+        this.ProductService.createNewProduct2(body).subscribe((result: any) => {
             this.router.navigate(["/productList/list"]);
 
             console.log(result);
@@ -158,5 +161,11 @@ export class NewProductComponent implements OnInit {
         //   showError() {
         //     this.toastr.error('Failed to add product', 'Error');
         //   }
+
+
+        discard()
+        {
+            this.router.navigate(["/productList/list"]);
+        }
         
 }

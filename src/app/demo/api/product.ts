@@ -7,6 +7,7 @@ export interface Product {
     code?: string;
     name?: string;
     description?: string;
+    prix?: number;
     price?: number;
     quantity?: number;
     inventoryStatus?: InventoryStatus;

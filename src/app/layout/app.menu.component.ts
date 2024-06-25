@@ -8,20 +8,23 @@ import { Component } from '@angular/core';
 export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
+    role : any = "";
 
     ngOnInit() {
+        this.role =  localStorage.getItem("role");
+
         this.model = [
-            {
-                label: 'Dashboards',
-                icon: 'pi pi-home',
-                items: [
-                    {
-                        label: 'E-Commerce',
-                        icon: 'pi pi-fw pi-home',
-                        routerLink: ['/']
-                    }
-                ]
-            },
+            // {
+            //     label: 'Dashboards',
+            //     icon: 'pi pi-home',
+            //     items: [
+            //         {
+            //             label: 'E-Commerce',
+            //             icon: 'pi pi-fw pi-home',
+            //             routerLink: ['/']
+            //         }
+            //     ]
+            // },
             // {
             //     label: 'Apps',
             //     icon: 'pi pi-th-large',
@@ -348,11 +351,11 @@ export class AppMenuComponent implements OnInit {
                         icon: 'pi pi-fw pi-plus',
                         routerLink: ['ecommerce/new-product']
                     },
-                    {
-                        label: 'Shopping Cart',
-                        icon: 'pi pi-fw pi-shopping-cart',
-                        routerLink: ['ecommerce/shopping-cart']
-                    }
+                    // {
+                    //     label: 'Shopping Cart',
+                    //     icon: 'pi pi-fw pi-shopping-cart',
+                    //     routerLink: ['ecommerce/shopping-cart']
+                    // }
                     // {
                     //     label: 'Checkout Form',
                     //     icon: 'pi pi-fw pi-check-square',

@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router , NavigationEnd } from '@angular/router';
 import { SelectItem } from 'primeng/api';
 import { DataView } from 'primeng/dataview';
@@ -10,8 +11,7 @@ import { ProductService } from 'src/app/demo/service/product.service';
 @Component({
     templateUrl: './listdemo.component.html'
 })
-export class ListDemoComponent implements OnInit {
-
+export class ListDemoComponent implements OnInit, AfterViewInit {
 
     products: Product[] = [];
     initialProducts: Product[] = [];
@@ -37,17 +37,31 @@ export class ListDemoComponent implements OnInit {
     category : any ;
     minPrice : number = 0;
     maxPrice : number = 0;
+    role : string = "";
 
-    constructor(private productService: ProductService , private CategoryService : CategoryService, public router: Router, private route: ActivatedRoute) { }
 
-    ngOnInit() {      
+    constructor(private productService: ProductService , private CategoryService : CategoryService, public router: Router, private route: ActivatedRoute , private sanitizer: DomSanitizer) { }
+
+    ngOnInit() {              
         this.productService.getProductList().subscribe((products : any) => {
-            this.products = products ;
-            this.initialProducts = products ;
+            products.forEach((p : any) => {
+
+              
+            //const objectURL = URL.createObjectURL(p.image);
+            //console.log(objectURL);
+          //  p.image = this.sanitizer.bypassSecurityTrustUrl(p.image);
+            this.products = products; 
+            this.initialProducts = products; 
+            });
             if (products)
                 {
                     this.CategoryService.getCategories().subscribe((categories: any) => {
-                        this.allCatgories = categories
+                        this.allCatgories = categories ;
+                        this.products.forEach((p : any) => {
+                            p.image = this.sanitizer.bypassSecurityTrustUrl(p.image);
+
+                        });
+
                     }, (err)=> {
                         console.log(err);
             
@@ -58,7 +72,6 @@ export class ListDemoComponent implements OnInit {
 
         });    
       
-        this.targetCities = [];
 
        
 
@@ -136,7 +149,7 @@ export class ListDemoComponent implements OnInit {
     }
     getCategoryById(id : string)
     {
-        return  this.allCatgories.filter((c: any)=> c._id === id)[0].name ;
+        return  this.allCatgories.filter((c: any)=> c._id === id)[0]?.name ;
 
     }
 
@@ -144,7 +157,6 @@ export class ListDemoComponent implements OnInit {
     {
         this.products = this.initialProducts;
         this.filterOption = "none"
-        this.filterOptions = [];
     }
 
     getAvailability(isAvailable : boolean)
@@ -191,6 +203,15 @@ export class ListDemoComponent implements OnInit {
         this.deleteProductsDialog = true;
         this.ProductIdTobeDeleted = id ;
     }
+
+    ngAfterViewInit(): void {
+        console.log('View is initialized' , this.products);
+        console.log('View is initialized' , this.initialProducts);
+
+      }
+    
+
+    
 
 
 }

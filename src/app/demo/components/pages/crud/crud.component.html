@@ -51,7 +51,7 @@
                         <td>
                             <div class="flex">
                                 <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editProduct(product)"></button>
-                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" [disabled]="product.Nbr_produits != 0" (click)="deleteProduct(product)"></button>
                             </div>
                         </td>
                     </tr>
@@ -65,12 +65,6 @@
                     <label for="name">Name</label>
                     <input type="text" pInputText id="name" [(ngModel)]="product.name" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"/>
                     <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Name is required.</small>
-                </div>
-                
-                <div class="field">
-                    <label for="Nbr_produits">Quantity</label>
-                    <input type="number" pInputText id="Nbr_produits" [(ngModel)]="product.Nbr_produits" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"/>
-                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Quantity is required.</small>
                 </div>
             </ng-template>
 
