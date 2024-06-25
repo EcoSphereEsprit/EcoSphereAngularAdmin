@@ -10,7 +10,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { RatingModule } from 'primeng/rating';
 import { ButtonModule } from 'primeng/button';
-import { DialogModule } from 'primeng/dialog';
 
 @NgModule({
 	imports: [
@@ -23,9 +22,8 @@ import { DialogModule } from 'primeng/dialog';
 		InputTextModule,
 		DropdownModule,
 		RatingModule,
-		ButtonModule,
-		DialogModule,
+		ButtonModule
 	],
-	declarations: [ListDemoComponent ]
+	declarations: [ListDemoComponent]
 })
 export class ListDemoModule { }
