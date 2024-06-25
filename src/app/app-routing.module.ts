@@ -9,9 +9,14 @@ const routerOptions: ExtraOptions = {
 const routes: Routes = [
 
     {
-        path: 'tools', component: AppLayoutComponent,
+        path: '', component: AppLayoutComponent,
         children: [
-            { path: 'pages', data: { breadcrumb: 'crud' }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
+            { path: '', loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule) },
+            { path: 'productList', data: { breadcrumb: 'productList' }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule) },
+            { path: 'utilities', data: { breadcrumb: 'Utilities' }, loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
+            { path: 'pages', data: { breadcrumb: 'Pages' }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
+
+           // { path: 'pages', data: { breadcrumb: 'crud' }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
 
           { path: 'gestion', data: { breadcrumb: 'gestion' }, loadChildren: () => import('./components/pages/pages.module').then(m => m.PagesModule) },
             { path: 'profile', data: { breadcrumb: 'User Management' }, loadChildren: () => import('./demo/components/profile/profile.module').then(m => m.ProfileModule) },
@@ -21,7 +26,7 @@ const routes: Routes = [
             { path: 'apps', data: { breadcrumb: 'Apps' }, loadChildren: () => import('./demo/components/apps/apps.module').then(m => m.AppsModule) }
         ]
     },
-    { path: '', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule)},
+    { path: 'aabb', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule)},
     { path: 'landing', loadChildren: () => import('./demo/components/landing/landing.module').then(m => m.LandingModule), canActivate: [authGuard] },
     { path: 'auth', data: { breadcrumb: 'Auth' }, loadChildren: () => import('./demo/components/auth/auth.module').then(m => m.AuthModule) },
     { path: 'profile', data: { breadcrumb: 'Profile' }, loadChildren: () => import('./demo/components/profile/create/profilecreate.module').then(m => m.ProfileCreateModule) },
