@@ -14,8 +14,10 @@ export class LandingComponent implements OnDestroy , OnInit {
     subscription: Subscription;
     avatarImageUrl!: SafeUrl;
     darkMode: boolean = false;
+
     isloggedIn !: boolean;
     constructor(public router: Router, private layoutService: LayoutService, private userService: UserServiceService, private sanitizer: DomSanitizer) {
+
         this.subscription = this.layoutService.configUpdate$.subscribe(config => {
             this.darkMode = config.colorScheme === 'dark' ? true : false;
         });

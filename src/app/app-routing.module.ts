@@ -1,7 +1,13 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app.layout.component';
+
+import { AdministrationModule } from './administration/administration.module';
+import { BlogAppModule } from './blog/blog.module';
+
+
 import { authGuard } from './auth.guard';
+
 const routerOptions: ExtraOptions = {
     anchorScrolling: 'enabled'
 };
@@ -13,6 +19,15 @@ const routes: Routes = [
         children: [
 
             { path: '', loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule) },
+
+            {
+                path: 'administration', loadChildren: () => AdministrationModule//,canActivate: [NgxPermissionsGuard], data: { permissions: { only: ['ROLE_Demande Credit Client', 'ROLE_Traitement Demandes'] } }
+            },
+            {
+                path: 'blog', loadChildren: () => BlogAppModule//,canActivate: [NgxPermissionsGuard], data: { permissions: { only: ['ROLE_Demande Credit Client', 'ROLE_Traitement Demandes'] } }
+            },
+            { path: 'uikit', data: { breadcrumb: 'UI Kit' }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule) },
+
             { path: 'productList', data: { breadcrumb: 'productList' }, loadChildren: () => import('./demo/components/uikit/uikit.module').then(m => m.UIkitModule) },
             { path: 'utilities', data: { breadcrumb: 'Utilities' }, loadChildren: () => import('./demo/components/utilities/utilities.module').then(m => m.UtilitiesModule) },
             { path: 'pages', data: { breadcrumb: 'Pages' }, loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
