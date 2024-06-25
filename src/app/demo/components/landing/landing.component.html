@@ -37,10 +37,12 @@
                         <a (click)="scrollToElement(features)" pRipple pStyleClass="@grandparent" enterClass="ng-hidden"
                             enterActiveClass="px-fadein" leaveToClass="ng-hidden"
                             class="flex m-0 lg:ml-5 lg:px-0 px-3 py-3 text-gray-800 font-medium line-height-3 hover:text-gray-800 cursor-pointer">
-                            <span>Features</span>
+                            <span>Panier</span>
                         </a>
                     </li>
                     <li>
+
+                        
                         <a (click)="scrollToElement(pricing)" pRipple pStyleClass="@grandparent" enterClass="ng-hidden"
                             enterActiveClass="px-fadein" leaveToClass="ng-hidden"
                             class="flex m-0 md:ml-5 md:px-0 px-3 py-3 text-gray-800 font-medium line-height-3 hover:text-gray-800 cursor-pointer">
@@ -54,7 +56,14 @@
                             <span>Buy Now</span>
                         </a>
                     </li>
-
+                    <li>
+                        <a routerLink="/ecommerce/shopping-cart" pRipple pStyleClass="@grandparent" enterClass="ng-hidden"
+                            enterActiveClass="px-fadein" leaveToClass="ng-hidden"
+                            class="flex m-0 lg:ml-5 lg:px-0 px-3 py-3 text-gray-800 font-medium line-height-3 hover:text-gray-800 cursor-pointer">
+                            <span>Features</span>
+                        </a>
+                    </li>
+                    
                 </ul>
             </div>
 
