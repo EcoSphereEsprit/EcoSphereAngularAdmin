@@ -67,7 +67,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
             
                     });
                 }
-        }, (err)=> {
+        }, (err : any)=> {
             console.log(err);
 
         });    
@@ -97,7 +97,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
         if (value != 'default') {
             this.productService.sortByDate(this.sortOption).subscribe((filtered : any) => {
                 this.products = filtered ;
-            }, (err)=> {
+            }, (err : any)=> {
                 console.log(err);
     
             });  
@@ -118,7 +118,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
             this.productService.filterProductsByPrice(this.minPrice , this.maxPrice).subscribe((filtered : any) => {
                 this.products = filtered ;
               
-            }, (err)=> {
+            },  (err : any)=> {
                 console.log(err);
     
             });  
@@ -127,7 +127,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
             this.productService.filterProductsByCategory(this.category.name).subscribe((filtered : any) => {
                 this.products = filtered ;
               
-            }, (err)=> {
+            },  (err : any)=> {
                 console.log(err);
     
             });  
@@ -137,7 +137,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
             this.productService.filterProductsByName(this.myFilterName).subscribe((filtered : any) => {
                 this.products = filtered ;
               
-            }, (err)=> {
+            },  (err : any)=> {
                 console.log(err);
     
             });  
@@ -176,12 +176,12 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
                             {
                                 this.CategoryService.getCategories().subscribe((categories: any) => {
                                     this.allCatgories = categories
-                                }, (err)=> {
-                                    console.log(err);
+                                },  (err : any)=> {
+                                    console.log (err );
                         
                                 });
                             }
-                    }, (err)=> {
+                    }, (err : any)=> {
                         console.log(err);
             
                     });    
@@ -189,7 +189,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
 
                 }
           
-        }, (err)=> {
+        }, (err : any)=> {
             console.log(err);
 
         });  

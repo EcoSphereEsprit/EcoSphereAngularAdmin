@@ -138,7 +138,7 @@ export class NewProductComponent implements OnInit {
 
             console.log(result);
 
-        }, (err)=> {
+        }, (err : any)=> {
             console.log(err);
 
         });

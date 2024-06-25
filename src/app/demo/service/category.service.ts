@@ -41,7 +41,7 @@ export class CategoryService {
 
   deleteCategorie( id : string ) {
     const token = localStorage.getItem("token");
-
+ 
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
