@@ -1,0 +1,87 @@
+<div class="card">
+    <ul class="list-none p-0 m-0">
+        <!-- Liste des articles du panier -->
+        <li *ngFor="let item of cart; let i = index" class="flex flex-column md:flex-row py-6 border-top-1 border-bottom-1 surface-border md:align-items-center">
+            <!-- Image de l'article -->
+            <img [src]="'assets/demo/images/ecommerce/productoverview/product-overview-3-1.png'" class="w-12rem flex-shrink-0 mx-auto md:mx-0" />
+            <!-- Détails de l'article et contrôles -->
+            <div class="flex-auto py-5 md:pl-5">
+                <!-- Nom de l'article -->
+                <div class="flex flex-wrap align-items-start sm:align-items-center sm:flex-row sm:justify-content-between surface-border pb-6">
+                    <div class="w-full sm:w-6 flex flex-column">
+                        <span class="text-900 text-xl font-medium mb-3">{{ item.name }}</span>
+                    </div>
+                    <!-- Quantité et lien de suppression -->
+                    <div class="w-full sm:w-6 flex align-items-start justify-content-between mt-3 sm:mt-0">
+                        <!-- Entrée de quantité -->
+                        <div>
+                            <input type="number" class="quantity-input" [(ngModel)]="item.quantity" (input)="updateQuantity(i, item.quantity)" />
+                        </div>
+                        <!-- Sous-total et lien de suppression -->
+                        <div class="flex flex-column sm:align-items-end">
+                            <!-- Sous-total de l'article -->
+                            <span class="text-900 text-xl font-medium mb-2 sm:mb-3">DT{{ (item.price * item.quantity).toFixed(2) }}</span>
+                            <!-- Lien pour supprimer l'article -->
+                            <a class="cursor-pointer text-pink-500 font-medium text-sm hover:text-pink-600 transition-colors transition-duration-300" tabindex="0" (click)="removeItem(i)">Supprimer</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Détails supplémentaires de l'article -->
+                <div class="flex flex-column">
+                    <span class="inline-flex align-items-center mb-3">
+                        <i class="pi pi-envelope text-700 mr-2"></i>
+                        <span class="text-700 mr-2">Commandé aujourd'hui</span>
+                    </span>
+                    <span class="inline-flex align-items-center mb-3">
+                        <i class="pi pi-send text-700 mr-2"></i>
+                        <span class="text-700 mr-2">Livré d'ici le <span class="font-bold">23 déc.</span></span>
+                    </span>
+                    <span class="flex align-items-center">
+                        <i class="pi pi-exclamation-triangle text-700 mr-2"></i>
+                        <span class="text-700">Quelques articles restants</span>
+                    </span>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <!-- Section des totaux du panier -->
+    <div class="flex mt-4">
+        <div class="flex-auto">
+            <!-- Sous-total -->
+            <div class="flex justify-content-between mb-4">
+                <span class="text-xl text-900 font-semibold">Sous-total</span>
+                <span class="text-xl text-900">${{ subtotal.toFixed(2) }}</span>
+            </div>
+
+            <!-- Frais de livraison -->
+            <div class="flex justify-content-between mb-4">
+                <span class="text-xl text-900 font-semibold">Frais de livraison</span>
+                <span class="text-xl text-900">{{ shippingCost === 0 ? 'Gratuit' : '$' + shippingCost.toFixed(2) }}</span>
+            </div>
+            <!-- Sélection du mode de paiement -->
+            <div class="flex mt-4">
+                <div class="flex-auto">
+                    <!-- Boutons radio pour le mode de paiement -->
+                    <p-radioButton name="paymentMethod" value="card" label="Paiement par carte" (click)="updatePaymentMethod('card')" [(ngModel)]="paymentMethod"></p-radioButton>
+                    <label for="paymentMethodCard"></label>
+                    
+                    <p-radioButton name="paymentMethod" value="cod" label="Paiement à la Livraison (+7dt de frais de livraison)" (click)="updatePaymentMethod('cod')" [(ngModel)]="paymentMethod"></p-radioButton>
+                    <label for="paymentMethodCod"></label>
+                </div>
+            </div>
+            
+            <!-- Section du montant total -->
+            <div class="flex justify-content-between border-top-1 surface-border mb-4 pt-4">
+                <span class="text-xl text-900 font-bold text-3xl">Total</span>
+                <span class="text-xl text-900 font-bold text-3xl">DT{{ total.toFixed(2) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section du bouton de paiement -->
+    <div class="flex flex-column align-items-center mb-6">
+        <div class="text-900 text-4xl mb-4 font-medium">Montant total à payer DT{{ total.toFixed(2) }}</div>
+        <button pButton pRipple label="Paiement" (click)="checkout()"></button>
+    </div>
+</div>
