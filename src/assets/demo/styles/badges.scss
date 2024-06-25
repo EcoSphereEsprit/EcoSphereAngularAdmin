@@ -11,7 +11,7 @@
         color: var(--green-800);
     }
 
-    &.status-false {
+    &.status-outofstock {
         background: var(--pink-200);
         color: var(--pink-800);
     }
@@ -31,7 +31,7 @@
         color: var(--green-500);
     }
 
-    &.status-false {
+    &.status-outofstock {
         color: var(--pink-500);
     }
 

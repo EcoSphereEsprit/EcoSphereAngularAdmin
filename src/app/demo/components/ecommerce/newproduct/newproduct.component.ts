@@ -1,105 +1,74 @@
-import { filter } from 'rxjs';
-import { CategoryService } from './../../../service/category.service';
-import { ProductService } from './../../../service/product.service';
-
-
-import { Component, ViewChildren, QueryList, ElementRef, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ViewChildren, QueryList, ElementRef } from '@angular/core';
 
 interface Product {
     name: string;
-    prix: string;
-    quantite_stock: string;
-    brand: string;
-    categorie: string;
-    couleur: string;
-    available: boolean;
+    price: string;
+    code: string;
+    sku: string;
+    status: string;
+    tags: string[];
+    category: string;
+    colors: string[];
+    stock: string;
+    inStock: boolean;
     description: string;
-    image: Image;
+    images: Image[];
 }
 
 interface Image {
     name: string;
     objectURL: string;
-    file ?: File
 }
 
 @Component({
-    selector: 'app-new-product',
     templateUrl: './newproduct.component.html',
     styleUrls: ['./newproduct.component.scss']
 })
-export class NewProductComponent implements OnInit {
-
-    
-    public categoriesList : any = [] ;
-    public allCatgories : any = [] ;
-
-
-    constructor(private CategoryService : CategoryService , private ProductService : ProductService , public router: Router, )
-    {
-
-    }
-    ngOnInit(): void {
-        this.CategoryService.getCategories().subscribe((categories: any) => {
-            this.allCatgories = categories
-            this.categoriesList = categories.map((category : any)=> category.name);
-            this.product.categorie = this.categoriesList[0]
-        }, (err)=> {
-            console.log(err);
-
-        });
-        
-    }
+export class NewProductComponent {
 
     @ViewChildren('buttonEl') buttonEl!: QueryList<ElementRef>;
 
     text: string = '';
 
+    categoryOptions = ['Sneakers', 'Apparel', 'Socks'];
 
-    colorOptions : any[]= [
-    { name: 'Black', background: "bg-gray-900" },
-    { name: 'Orange', background: "bg-orange-500" },
-    { name: 'Green', background: "bg-green-500" },
-    { name: 'Red', background: "bg-red-500" },
-    { name: 'Blue', background: "bg-blue-500" },
-    { name: 'Grey', background: "bg-gray-500" }
-];
+    colorOptions: any[] = [
+        { name: 'Black', background: "bg-gray-900" },
+        { name: 'Orange', background: "bg-orange-500" },
+        { name: 'Navy', background: "bg-blue-500" }
+    ];
 
     product: Product = {
-        name: 'test',
-        prix: '1234',
-        quantite_stock: '4',
-        brand: 'dfghj',
-        categorie: "",
-        couleur: 'Blue',
-        available: true,
-        description: 'testayayayya',
-        image: {
-            name: "default",
-            objectURL: ""
-        }
+        name: '',
+        price: '',
+        code: '',
+        sku: '',
+        status: 'Draft',
+        tags: ['Nike', 'Sneaker'],
+        category: 'Sneakers',
+        colors: ['Blue'],
+        stock: 'Sneakers',
+        inStock: true,
+        description: '',
+        images: []
     };
 
     uploadedFiles: any[] = [];
 
     showRemove: boolean = false;
 
-    
+    onChipRemove(item: string) {
+        this.product.tags = this.product.tags.filter(i => i !== item);
+    }
 
     onColorSelect(color: string) {
-        this.product.couleur = color;
+        this.product.colors.indexOf(color) == -1 ? this.product.colors.push(color) : this.product.colors.splice(this.product.colors.indexOf(color), 1);
     }
 
     onUpload(event: any) {
-        const file: File = event.files[0];
-        
-        this.product.image = {
-            name: file.name,
-            objectURL: window.URL.createObjectURL(file),
-            file : event.files[0] 
-        } ;
-        
+        for (let file of event.files) {
+            this.product.images.push(file);
+        }
     }
 
     onImageMouseOver(file: Image) {
@@ -115,48 +84,7 @@ export class NewProductComponent implements OnInit {
     }
 
     removeImage(file: Image) {
-        this.product.image = {
-            name: "default",
-            objectURL: ""
-        };
+        this.product.images = this.product.images.filter(i => i !== file);
     }
 
-    createNewProduct()
-    {
-        let body : any = this.product ; 
-        let image : any = this.product.image;
-        body.file = image;
-        body.ImageName = image.file.name
-        body.protocol = "http"
-        body.categorie = this.allCatgories.filter((c: any)=> c.name === this.product.categorie)[0]._id ;
-
-        this.ProductService.createNewProduct(body).subscribe((result: any) => {
-            this.router.navigate(["/productList/list"]);
-
-            console.log(result);
-
-        }, (err)=> {
-            console.log(err);
-
-        });
-
-    }
-
-    onFileSelected(event: any) {
-        const file: File = event.target.files[0];
-        this.product.image = {
-            name: file.name,
-            objectURL: window.URL.createObjectURL(file),
-            file : event.target.files[0] 
-        } ;      }
-
-
-        // showSuccess() {
-        //     this.toastr.success('Product added successfully!', 'Success');
-        //   }
-        
-        //   showError() {
-        //     this.toastr.error('Failed to add product', 'Error');
-        //   }
-        
 }

@@ -10,7 +10,7 @@
   background: var(--green-200);
   color: var(--green-800);
 }
-.product-badge.status-false {
+.product-badge.status-outofstock {
   background: var(--pink-200);
   color: var(--pink-800);
 }
@@ -27,7 +27,7 @@
 .product-badge-text.status-instock {
   color: var(--green-500);
 }
-.product-badge-text.status-false {
+.product-badge-text.status-outofstock {
   color: var(--pink-500);
 }
 .product-badge-text.status-lowstock {

@@ -30,6 +30,6 @@ export class LandingComponent implements OnDestroy {
     }
 
     navigateToHome() {
-        this.router.navigate(["/productList/overlay"]);
+        this.router.navigate(["/uikit/overlay"]);
     }
 }
