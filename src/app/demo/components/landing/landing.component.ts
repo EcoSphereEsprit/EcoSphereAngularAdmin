@@ -81,4 +81,8 @@ export class LandingComponent implements OnDestroy , OnInit {
     navigateToProfile(){
         this.router.navigate(["/profile"]);
     }
+
+    navigateToProducts() {
+        this.router.navigate(["/productList/list"]);
+    }
 }
