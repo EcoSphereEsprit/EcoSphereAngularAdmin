@@ -111,7 +111,7 @@ export class CrudComponent implements OnInit {
   hideCancellationConfirmation() {
     this.cancelConfirmationModal.nativeElement.close();
   }
-
+//is admin 
   isAdmin(): boolean {
     const role = localStorage.getItem('role');
     return role === 'ADMIN';

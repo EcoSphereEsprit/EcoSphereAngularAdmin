@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app.layout.component';
 
-import { AdministrationModule } from './administration/administration.module';
 import { BlogAppModule } from './blog/blog.module';
 
 
@@ -20,9 +19,7 @@ const routes: Routes = [
 
             { path: '', loadChildren: () => import('./demo/components/dashboards/dashboards.module').then(m => m.DashboardsModule) },
 
-            {
-                path: 'administration', loadChildren: () => AdministrationModule//,canActivate: [NgxPermissionsGuard], data: { permissions: { only: ['ROLE_Demande Credit Client', 'ROLE_Traitement Demandes'] } }
-            },
+           
             {
                 path: 'blog', loadChildren: () => BlogAppModule//,canActivate: [NgxPermissionsGuard], data: { permissions: { only: ['ROLE_Demande Credit Client', 'ROLE_Traitement Demandes'] } }
             },
