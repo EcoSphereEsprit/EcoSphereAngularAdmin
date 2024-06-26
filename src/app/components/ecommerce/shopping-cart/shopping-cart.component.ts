@@ -17,6 +17,7 @@ export class ShoppingCartComponent implements OnInit {
     constructor(private router: Router) {
         const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
         this.cart = cartItems;
+        console.log("cart", this.cart  )
         this.calculateTotals();
     }
 
