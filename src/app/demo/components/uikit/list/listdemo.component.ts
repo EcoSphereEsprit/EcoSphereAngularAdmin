@@ -196,6 +196,7 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
     }
     editProduct(product : any)
     {
+        localStorage.setItem('productToEdit', JSON.stringify(product));  
         this.router.navigate(['/ecommerce/new-product'], { queryParams: { product : product } });
     }
 
@@ -210,7 +211,13 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
 
       }
     
+      addToChart(product: any)
+      {
+        localStorage.setItem('chartId', product._id);  
+        this.router.navigate(['/ecommerce/product-overview']);
 
+
+      }
     
 
 
