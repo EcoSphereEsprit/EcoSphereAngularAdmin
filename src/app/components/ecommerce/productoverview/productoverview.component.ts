@@ -64,7 +64,7 @@ export class ProductOverviewComponent implements OnInit {
             name: this.product.name,
             price: this.product.prix,
             quantity: this.quantity,
-            image: this.images[this.selectedImageIndex] // Assuming this should be 'image' instead of 'Image'
+            image: this.product.image
         };
 
         // Retrieve existing cart items from local storage
