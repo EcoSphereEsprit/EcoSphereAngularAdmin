@@ -122,6 +122,8 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
               
             },  (err : any)=> {
                 console.log(err);
+                this.products = [] ;
+
     
             });  
         } 
@@ -131,6 +133,8 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
               
             },  (err : any)=> {
                 console.log(err);
+                this.products = [] ;
+
     
             });  
         }
@@ -141,9 +145,14 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
               
             },  (err : any)=> {
                 console.log(err);
+                this.products = [] ;
+
     
             });  
         }
+
+        else if (this.filterOption === "available")
+            this.products = this.products.filter((p:any)=> p.available) ;
     }
 
     onFilter(dv: DataView, event: Event) {
