@@ -29,10 +29,9 @@ export class ProductOverviewComponent implements OnInit {
             name: "default",
             objectURL: ""
         }
-    };;
+    };
 
-    
-    colorOptions : any[]= [
+    colorOptions: any[] = [
         { name: 'Black', background: "bg-gray-900" },
         { name: 'Orange', background: "bg-orange-500" },
         { name: 'Green', background: "bg-green-500" },
@@ -44,9 +43,7 @@ export class ProductOverviewComponent implements OnInit {
     constructor(private productService: ProductService, private router: Router) { }
 
     ngOnInit(): void {
-   
-
-        let productId : any = localStorage.getItem('chartId');  
+        let productId: any = localStorage.getItem('chartId');  
 
         this.productService.getProductById(productId).then(data => {
             this.product = data;
@@ -56,9 +53,6 @@ export class ProductOverviewComponent implements OnInit {
     }
 
     addToCart() {
-        // Clear cart from local storage
-        localStorage.removeItem('cart');
-
         const cartItem = {
             id: this.product._id,
             name: this.product.name,
