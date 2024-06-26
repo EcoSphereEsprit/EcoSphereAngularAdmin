@@ -42,7 +42,9 @@ export class ListDemoComponent implements OnInit, AfterViewInit {
 
     constructor(private productService: ProductService , private CategoryService : CategoryService, public router: Router, private route: ActivatedRoute , private sanitizer: DomSanitizer) { }
 
-    ngOnInit() {              
+    ngOnInit() {   
+        
+        this.role =  localStorage.getItem("role") || "";
         this.productService.getProductList().subscribe((products : any) => {
             products.forEach((p : any) => {
 
