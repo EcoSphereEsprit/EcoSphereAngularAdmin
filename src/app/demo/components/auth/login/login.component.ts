@@ -38,7 +38,9 @@ export class LoginComponent implements OnInit {
     this.userService.login(this.username, this.password).subscribe({
       next: response => {
         console.log('Login successful', response);
-
+        if(response.role != 'ADMIN'){
+        this.messageService.add({ key: 'tst', severity: 'error', summary: 'LogIn failed', detail: 'not an admin account' });
+        }
         localStorage.setItem('token', response.token);
         localStorage.setItem('role', response.role);
         localStorage.setItem('userId', response.userId);
@@ -46,7 +48,7 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('avatrUrl', response.avatrUrl);
         localStorage.setItem('username', response.username);
         this.messageService.add({ key: 'tst', severity: 'success', summary: 'Success Message', detail: 'Login successful' });
-        this.router.navigate(['/auth/verification']);
+        this.router.navigate(['/']);
       },
       error: error => {
         console.error('Login failed', error);
